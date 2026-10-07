@@ -6,8 +6,8 @@ function! fzf_utils#toggle#is_ignored_included() abort
   return get(g:, 'fzf_include_ignored', 0)
 endfunction
 
-" Flip g:fzf_include_ignored. rg reads it on every search; companions that
-" cache a command (fd) rebuild it on the FzfUtilsIgnoredToggled event
+" Flip g:fzf_include_ignored. :Files (fd) and fzf-utils-rg read it on every
+" search; FzfUtilsIgnoredToggled is for anything else that wants to know
 function! fzf_utils#toggle#toggle_ignored() abort
   let g:fzf_include_ignored = !get(g:, 'fzf_include_ignored', 0)
   if exists('#User#FzfUtilsIgnoredToggled')

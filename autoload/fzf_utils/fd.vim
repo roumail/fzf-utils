@@ -9,7 +9,10 @@ function! s:fd_cmd() abort
   return l:cmd
 endfunction
 
-function! fzf_utils#fd#update_default_fd_command() abort
-  let $FZF_DEFAULT_COMMAND = s:fd_cmd()
+" fzf options that make fd the file source, following the ignore toggle. Empty
+" when fd is not installed, so fzf falls back to its default source. Nothing
+" global is changed: $FZF_DEFAULT_COMMAND is left alone.
+function! fzf_utils#fd#options() abort
+  return executable('fd') ? {'source': s:fd_cmd()} : {}
 endfunction
 
