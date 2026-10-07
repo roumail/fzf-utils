@@ -4,6 +4,17 @@
 if exists('g:loaded_fzf_utils')
   finish
 endif
+" Required plugins: without them nothing here is defined
+let s:missing = filter({
+      \ 'junegunn/fzf.vim': 'autoload/fzf/vim.vim',
+      \ }, 'empty(globpath(&rtp, v:val))')
+if !empty(s:missing)
+  echohl WarningMsg
+  echomsg 'fzf-utils: not loaded, requires ' . join(sort(keys(s:missing)), ', ')
+  echohl None
+  finish
+endif
+unlet s:missing
 let g:loaded_fzf_utils = 1
 
 " Single toggle for both rg and fd

@@ -19,6 +19,8 @@ searches when both are installed.
 ## Install
 
 Requires [fzf](https://github.com/junegunn/fzf) and fzf.vim; `fd` is optional.
+If a required plugin is missing, Vim shows
+`fzf-utils: not loaded, requires …` at startup and the plugin defines nothing.
 
 ```vim
 Plug 'junegunn/fzf'
