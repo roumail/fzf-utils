@@ -5,8 +5,11 @@ Small additions to [fzf.vim](https://github.com/junegunn/fzf.vim) for finding fi
 - `:FzfToggleIgnored` flips `g:fzf_include_ignored` (default `0`: skip ignored files)
   and fires `User FzfUtilsIgnoredToggled`.
 - `:Files[!]`, `:Buffers[!]`: fzf.vim's commands with a preview window.
-- Sets `$FZF_DEFAULT_COMMAND` to an [fd](https://github.com/sharkdp/fd) command
-  unless it is already set, and rebuilds it when the ignore toggle flips.
+- `:Files` lists files with [fd](https://github.com/sharkdp/fd) when it is
+  installed (excluding `.git` and `__pycache__`; `-I` while ignored files are
+  included). Nothing global changes: `$FZF_DEFAULT_COMMAND` is left alone, so
+  other fzf commands and your shell keep their own source. Without fd, `:Files`
+  uses fzf's default.
 
 [fzf-utils-rg](https://github.com/roumail/fzf-utils-rg) reads the same
 `g:fzf_include_ignored`, so one `:FzfToggleIgnored` covers both file and content
@@ -14,7 +17,7 @@ searches when both are installed.
 
 ## Install
 
-Requires [fzf](https://github.com/junegunn/fzf), fzf.vim and `fd`.
+Requires [fzf](https://github.com/junegunn/fzf) and fzf.vim; `fd` is optional.
 
 ```vim
 Plug 'junegunn/fzf'
