@@ -16,3 +16,6 @@ command! -bang -nargs=* Files
       \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(fzf_utils#fd#options()), <bang>0)
 command! -bang -nargs=* Buffers
       \ call fzf#vim#buffers(fzf#vim#with_preview(), <bang>0)
+
+" Pick buffers to wipe out (<Tab> marks several, ctrl-a takes them all)
+command! BD call fzf_utils#buffers#delete()
