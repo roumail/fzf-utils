@@ -5,6 +5,7 @@ Small additions to [fzf.vim](https://github.com/junegunn/fzf.vim) for finding fi
 - `:FzfToggleIgnored` flips `g:fzf_include_ignored` (default `0`: skip ignored files)
   and fires `User FzfUtilsIgnoredToggled`.
 - `:Files[!]`, `:Buffers[!]`: fzf.vim's commands with a preview window.
+- `:BD`: pick buffers to wipe out (`<Tab>` marks several, `ctrl-a` takes all).
 - `:Files` lists files with [fd](https://github.com/sharkdp/fd) when it is
   installed (excluding `.git` and `__pycache__`; `-I` while ignored files are
   included). Nothing global changes: `$FZF_DEFAULT_COMMAND` is left alone, so
