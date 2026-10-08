@@ -17,7 +17,7 @@ endif
 unlet s:missing
 let g:loaded_fzf_utils = 1
 
-" Single toggle for both rg and fd
+" Flips g:fzf_utils_include_ignored, shared with fzf-utils-rg (see README)
 command! FzfToggleIgnored call fzf_utils#toggle#toggle_ignored()
 
 " Similar to default FZF command, however FZF doesn't give preview
