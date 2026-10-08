@@ -22,7 +22,7 @@ nmap <leader><leader> <Plug>(fzf-utils-files)
 
 ## Shared option: `g:fzf_utils_include_ignored`
 
-Read on every search by `:FdFiles` here and by `:Grep` / `:Rg` in
+Read on every search by `:FdFiles` here and by `:Grep` / `:RgRaw` in
 [fzf-utils-rg](https://github.com/roumail/fzf-utils-rg), so one
 `:FzfToggleIgnored` covers file and content searches. Both plugins search the
 same files:
@@ -47,7 +47,8 @@ let g:fzf_utils_include_ignored = 1
 ## Install
 
 Requires [fzf](https://github.com/junegunn/fzf) and fzf.vim; `fd` is optional.
-If a required plugin is missing, Vim shows
+Required plugins are checked once every plugin has loaded, so the order of your
+Plug lines doesn't matter. If one is missing, Vim shows
 `fzf-utils: not loaded, requires …` at startup and the plugin defines nothing.
 
 ```vim
