@@ -1,5 +1,5 @@
-" fzf-utils: the ignore toggle shared with fzf-utils-rg, and fzf.vim's
-" Files/Buffers with a preview, Files listing with fd.
+" fzf-utils: the ignore toggle shared with fzf-utils-rg, :FdFiles (fzf.vim's
+" :Files listing with fd) and :BD.
 " Requires junegunn/fzf and junegunn/fzf.vim; fd is optional.
 if exists('g:loaded_fzf_utils')
   finish
@@ -20,13 +20,14 @@ let g:loaded_fzf_utils = 1
 " Flips g:fzf_utils_include_ignored, shared with fzf-utils-rg (see README)
 command! FzfToggleIgnored call fzf_utils#toggle#toggle_ignored()
 
-" Similar to default FZF command, however FZF doesn't give preview
+" fzf.vim's :Files, listing files with fd (following :FzfToggleIgnored) when it
+" is installed. Own name, so fzf.vim's commands are left alone.
 " https://github.com/junegunn/fzf.vim?tab=readme-ov-file#example-customizing-files-command
-" Files are listed with fd (following :FzfToggleIgnored) when it is installed
-command! -bang -nargs=* Files
+command! -bang -nargs=? -complete=dir FdFiles
       \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(fzf_utils#fd#options()), <bang>0)
-command! -bang -nargs=* Buffers
-      \ call fzf#vim#buffers(fzf#vim#with_preview(), <bang>0)
+
+" <Plug> mapping; no keys are bound here (see README)
+nnoremap <silent> <Plug>(fzf-utils-files) <Cmd>FdFiles<CR>
 
 " Pick buffers to wipe out (<Tab> marks several, ctrl-a takes them all)
 command! BD call fzf_utils#buffers#delete()
