@@ -1,17 +1,8 @@
-" Unified ignore toggle for both rg and fd
-" g:fzf_include_ignored:
-"   1 = search in ignored files (rg -u, fd -I)
-"   0 = respect .gitignore (default)
-function! fzf_utils#toggle#is_ignored_included() abort
-  return get(g:, 'fzf_include_ignored', 0)
-endfunction
-
-" Flip g:fzf_include_ignored. :Files (fd) and fzf-utils-rg read it on every
-" search; FzfUtilsIgnoredToggled is for anything else that wants to know
+" g:fzf_utils_include_ignored, shared with fzf-utils-rg (see README):
+"   0 = respect ignore files (default)
+"   1 = also search ignored files (fd --no-ignore, rg --no-ignore)
+" Both plugins read it on every search.
 function! fzf_utils#toggle#toggle_ignored() abort
-  let g:fzf_include_ignored = !get(g:, 'fzf_include_ignored', 0)
-  if exists('#User#FzfUtilsIgnoredToggled')
-    doautocmd <nomodeline> User FzfUtilsIgnoredToggled
-  endif
-  echo 'FZF include ignored: ' . (g:fzf_include_ignored ? 'on' : 'off')
+  let g:fzf_utils_include_ignored = !get(g:, 'fzf_utils_include_ignored', 0)
+  echo 'fzf-utils include ignored: ' . (g:fzf_utils_include_ignored ? 'on' : 'off')
 endfunction

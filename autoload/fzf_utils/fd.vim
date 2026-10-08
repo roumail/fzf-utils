@@ -1,10 +1,14 @@
-let s:fd_base = 'fd --type f --strip-cwd-prefix --hidden --follow --exclude .git -E "**/__pycache__/**"'
+" Hidden files are listed, .git never is. Every option is spelled out and the
+" global ignore file (~/.config/fd/ignore) is skipped, so the result doesn't
+" depend on per-user fd setup. Must list the same files fzf-utils-rg searches.
+let s:fd_base = 'fd --type f --strip-cwd-prefix --hidden --follow'
+      \ . ' --no-global-ignore-file --exclude .git -E "**/__pycache__/**"'
 
 function! s:fd_cmd() abort
   let l:cmd = s:fd_base
-  if get(g:, 'fzf_include_ignored', 0)
-    " -I = don't respect ignore files, -E still allows explicit excludes
-    let l:cmd .= ' -I'
+  if get(g:, 'fzf_utils_include_ignored', 0)
+    " --exclude still applies with --no-ignore
+    let l:cmd .= ' --no-ignore'
   endif
   return l:cmd
 endfunction
@@ -15,4 +19,3 @@ endfunction
 function! fzf_utils#fd#options() abort
   return executable('fd') ? {'source': s:fd_cmd()} : {}
 endfunction
-
