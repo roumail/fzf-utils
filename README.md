@@ -2,17 +2,27 @@
 
 Small additions to [fzf.vim](https://github.com/junegunn/fzf.vim) for finding files.
 
-- `:FzfToggleIgnored` flips `g:fzf_utils_include_ignored` (see below).
-- `:Files[!]`, `:Buffers[!]`: fzf.vim's commands with a preview window.
-- `:BD`: pick buffers to wipe out (`<Tab>` marks several, `ctrl-a` takes all).
-- `:Files` lists files with [fd](https://github.com/sharkdp/fd) when it is
-  installed. Nothing global changes: `$FZF_DEFAULT_COMMAND` is left alone, so
-  other fzf commands and your shell keep their own source. Without fd, `:Files`
-  uses fzf's default source and doesn't follow `g:fzf_utils_include_ignored`.
+| Command | `<Plug>` mapping | What it does |
+| --- | --- | --- |
+| `:FdFiles[!] [dir]` | `<Plug>(fzf-utils-files)` | fzf.vim's `:Files`, listing files with [fd](https://github.com/sharkdp/fd) (see below). |
+| `:FzfToggleIgnored` | | Flip `g:fzf_utils_include_ignored`. |
+| `:BD` | | Pick buffers to wipe out (`<Tab>` marks several, `ctrl-a` takes all). |
+
+No fzf.vim command is redefined: `:Files`, `:Buffers` and the rest stay
+fzf.vim's, whatever order the plugins load in. Nothing global changes either:
+`$FZF_DEFAULT_COMMAND` is left alone, so other fzf commands and your shell keep
+their own source. Without fd, `:FdFiles` uses fzf's default source and doesn't
+follow `g:fzf_utils_include_ignored`.
+
+No keys are bound. For example:
+
+```vim
+nmap <leader><leader> <Plug>(fzf-utils-files)
+```
 
 ## Shared option: `g:fzf_utils_include_ignored`
 
-Read on every search by `:Files` here and by `:Grep` / `:Rg` in
+Read on every search by `:FdFiles` here and by `:Grep` / `:Rg` in
 [fzf-utils-rg](https://github.com/roumail/fzf-utils-rg), so one
 `:FzfToggleIgnored` covers file and content searches. Both plugins search the
 same files:
