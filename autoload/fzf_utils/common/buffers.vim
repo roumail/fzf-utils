@@ -6,7 +6,7 @@ function! s:delete_buffers(lines) abort
   execute 'bwipeout' join(map(a:lines, {_, line -> split(line)[0]}))
 endfunction
 
-function! fzf_utils#buffers#delete() abort
+function! fzf_utils#common#buffers#delete() abort
   call fzf#run(fzf#wrap({
         \ 'source': s:list_buffers(),
         \ 'sink*': { lines -> s:delete_buffers(lines) },
