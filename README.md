@@ -61,10 +61,32 @@ set it in that project's local config:
 let g:fzf_utils_include_ignored = 1
 ```
 
-## Built on it
+## Project scopes
 
-[grepscope](https://github.com/roumail/grepscope) builds `:GrepScope` (grep
-within project scopes) on top of `:Grep`.
+With [project-detect](https://github.com/roumail/project-detect) installed,
+`:Grep` can search one part of the current project: its code or its tests,
+optionally limited to its language. The scopes of a Python project are
+`project`, `project python`, `tests` and `tests python`. A Go project has
+`project go`, `tests` and `tests go`.
+
+| Function | What it does |
+| --- | --- |
+| `fzf_utils#rg#scope#grep(label [, pattern])` | Live grep in the scope `label`. |
+| `fzf_utils#rg#scope#list()` | `[label, rg-args]` pairs: `all`, then the project's scopes. |
+| `fzf_utils#rg#scope#args(scope)` | The rg arguments for one of `project_detect#scopes()`. |
+| `fzf_utils#rg#live_grep#word_pattern()` | The word under the cursor, or the visual selection, as a pattern: regex characters escaped, wrapped in `\b`. |
+
+The scope is looked up when `fzf_utils#rg#scope#grep()` is called, so mappings
+can be made straight away, for example in an ftplugin:
+
+```vim
+" ~/.vim/ftplugin/python/keymaps.vim
+nnoremap <buffer> <leader>rp <Cmd>call fzf_utils#rg#scope#grep('project python')<CR>
+nnoremap <buffer> gw <Cmd>call fzf_utils#rg#scope#grep('project python', fzf_utils#rg#live_grep#word_pattern())<CR>
+```
+
+Where the project has no such scope, it prints
+`Grep: no scope "<label>" in this project`.
 
 ## Install
 
@@ -78,4 +100,5 @@ Plug lines doesn't matter. If one is missing, Vim shows
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'roumail/fzf-utils'
+Plug 'roumail/project-detect'  " for project scopes
 ```
