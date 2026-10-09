@@ -19,7 +19,8 @@ Commands and mappings that need fd or rg are defined when that tool is
 installed. `:Grep` and `:RgRaw` save the accepted query to the search register
 and `:History/`.
 
-No keys are bound. For example:
+Apart from `gw` / `gW` in project files ([Project scopes](#project-scopes)), no
+keys are bound. For example:
 
 ```vim
 nmap <leader><leader> <Plug>(fzf-utils-files)
@@ -69,23 +70,35 @@ optionally limited to its language. The scopes of a Python project are
 `project`, `project python`, `tests` and `tests python`. A Go project has
 `project go`, `tests` and `tests go`.
 
+In a buffer of the project's language (a Python file in a Python project, a Go
+file in a Go module), two keys grep the word under the cursor, or the visual
+selection, matched literally:
+
+| Key | Mode | Searches |
+| --- | --- | --- |
+| `gw` | n, x | the project's code, in its language |
+| `gW` | n, x | the project's tests, in its language |
+
+In other buffers `gw` is Vim's own.
+
 | Function | What it does |
 | --- | --- |
+| `fzf_utils#rg#scope#code([pattern])` | Live grep in the project's code, in its language. |
+| `fzf_utils#rg#scope#tests([pattern])` | Live grep in the project's tests, in its language. |
 | `fzf_utils#rg#scope#grep(label [, pattern])` | Live grep in the scope `label`. |
 | `fzf_utils#rg#scope#list()` | `[label, rg-args]` pairs: `all`, then the project's scopes. |
 | `fzf_utils#rg#scope#args(scope)` | The rg arguments for one of `project_detect#scopes()`. |
 | `fzf_utils#rg#live_grep#word_pattern()` | The word under the cursor, or the visual selection, as a pattern: regex characters escaped, wrapped in `\b`. |
 
-The scope is looked up when `fzf_utils#rg#scope#grep()` is called, so mappings
-can be made straight away, for example in an ftplugin:
+The project is looked up when they are called, so mappings work in any
+project:
 
 ```vim
-" ~/.vim/ftplugin/python/keymaps.vim
-nnoremap <buffer> <leader>rp <Cmd>call fzf_utils#rg#scope#grep('project python')<CR>
-nnoremap <buffer> gw <Cmd>call fzf_utils#rg#scope#grep('project python', fzf_utils#rg#live_grep#word_pattern())<CR>
+nnoremap <leader>rp <Cmd>call fzf_utils#rg#scope#code()<CR>
+nnoremap <leader>rt <Cmd>call fzf_utils#rg#scope#tests()<CR>
 ```
 
-Where the project has no such scope, it prints
+Where the project has no such scope, they print
 `Grep: no scope "<label>" in this project`.
 
 ## Install
