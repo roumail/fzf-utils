@@ -128,6 +128,14 @@ function! s:init_rg() abort
   nnoremap <silent> <Plug>(fzf-utils-grep-dir) <Cmd>execute 'Grep -- ' . expand('%:.:h') . '/'<CR>
   " Live grep from the working directory
   nnoremap <silent> <Plug>(fzf-utils-grep) <Cmd>Grep<CR>
+
+  " In a buffer of the project's language (project-detect): live grep the
+  " project's code (gw) / tests (gW) for the word under the cursor or the
+  " selection. Elsewhere Vim's own gw.
+  nnoremap <expr> gw fzf_utils#rg#scope#word_key('code', 'gw')
+  xnoremap <expr> gw fzf_utils#rg#scope#word_key('code', 'gw')
+  nnoremap <expr> gW fzf_utils#rg#scope#word_key('tests', 'gW')
+  xnoremap <expr> gW fzf_utils#rg#scope#word_key('tests', 'gW')
 endfunction
 
 if v:vim_did_enter

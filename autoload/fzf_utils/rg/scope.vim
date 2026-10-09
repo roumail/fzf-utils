@@ -66,3 +66,30 @@ function! fzf_utils#rg#scope#grep(label, ...) abort
   endfor
   echo 'Grep: no scope "' . a:label . '" in this project'
 endfunction
+
+" Live grep in the project's code / tests, limited to its language, optionally
+" starting with a pattern
+function! fzf_utils#rg#scope#code(...) abort
+  call call('fzf_utils#rg#scope#grep', [s:label('project')] + a:000)
+endfunction
+
+function! fzf_utils#rg#scope#tests(...) abort
+  call call('fzf_utils#rg#scope#grep', [s:label('tests')] + a:000)
+endfunction
+
+" 'project python' for a:part 'project' in a Python project
+function! s:label(part) abort
+  let l:language = exists('g:loaded_project_detect') ? project_detect#language() : ''
+  return empty(l:language) ? a:part : a:part . ' ' . l:language
+endfunction
+
+" For the gw / gW mappings: in a buffer of the project's language, grep the
+" project's code / tests (a:part) for the word under the cursor or the
+" selection. Anywhere else a:key, Vim's own command.
+function! fzf_utils#rg#scope#word_key(part, key) abort
+  if !exists('g:loaded_project_detect') || empty(&filetype)
+        \ || &filetype !=# project_detect#language()
+    return a:key
+  endif
+  return printf("\<Cmd>call fzf_utils#rg#scope#%s(fzf_utils#rg#live_grep#word_pattern())\<CR>", a:part)
+endfunction
