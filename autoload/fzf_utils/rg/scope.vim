@@ -67,6 +67,21 @@ function! fzf_utils#rg#scope#grep(label, ...) abort
   echo 'Grep: no scope "' . a:label . '" in this project'
 endfunction
 
+" :GrepScope: pick a scope in fzf, then live grep in it, optionally starting
+" with a pattern. With no project it is a plain :Grep.
+function! fzf_utils#rg#scope#pick(...) abort
+  let l:pattern = a:0 ? a:1 : ''
+  let l:labels = map(fzf_utils#rg#scope#list(), 'v:val[0]')
+  if len(l:labels) == 1
+    call call('fzf_utils#rg#live_grep#window', a:0 ? [a:1] : [])
+    return
+  endif
+  call fzf#run(fzf#wrap({
+        \ 'source': l:labels,
+        \ 'sink': {label -> fzf_utils#rg#scope#grep(label, l:pattern)},
+        \ }))
+endfunction
+
 " Live grep in the project's code / tests, limited to its language, optionally
 " starting with a pattern
 function! fzf_utils#rg#scope#code(...) abort
