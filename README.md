@@ -11,6 +11,8 @@ to wipe out.
 | `:Grep[!] [pattern] [-- rg-options/paths]` | `<Plug>(fzf-utils-grep)` | rg | Live grep: ripgrep re-runs as you type. `C-r` regex, `C-f` fixed string, `C-w` word. |
 | | `<Plug>(fzf-utils-grep-dir)` | rg | `:Grep` in the current buffer's directory. |
 | | `<Plug>(fzf-utils-grep-replay)` | rg | Replay the last live grep with its last query. |
+| `:GrepScope [pattern]` | `<Plug>(fzf-utils-grep-scope)` | rg | Pick a scope of the current project ([Project scopes](#project-scopes)), then `:Grep` in it. Without a project, a plain `:Grep`. |
+| | `<Plug>(fzf-utils-grep-scope-word)` | rg | `:GrepScope` for the word under the cursor, or the visual selection (n, x). |
 | `:RgRaw[!] <rg args>` | | rg | Static grep: ripgrep runs once with your arguments as given (`:RgRaw -g "*.vim" foo src/`), fzf filters the result. |
 | `:FzfToggleIgnored` | | | Include or leave out ignored files in `:FdFiles`, `:Grep` and `:RgRaw`. |
 | `:BD` | | | Pick buffers to wipe out (`<Tab>` marks several, `ctrl-a` takes all). |
@@ -27,6 +29,7 @@ nmap <leader><leader> <Plug>(fzf-utils-files)
 nmap <leader>r/ <Plug>(fzf-utils-grep)
 nmap <leader>r. <Plug>(fzf-utils-grep-dir)
 nmap <leader>rr <Plug>(fzf-utils-grep-replay)
+nmap <leader>rs <Plug>(fzf-utils-grep-scope)
 nnoremap <leader>r: :Grep
 ```
 
@@ -83,6 +86,7 @@ In other buffers `gw` is Vim's own.
 
 | Function | What it does |
 | --- | --- |
+| `fzf_utils#rg#scope#pick([pattern])` | `:GrepScope`: pick a scope in fzf, then live grep in it. |
 | `fzf_utils#rg#scope#code([pattern])` | Live grep in the project's code, in its language. |
 | `fzf_utils#rg#scope#tests([pattern])` | Live grep in the project's tests, in its language. |
 | `fzf_utils#rg#scope#grep(label [, pattern])` | Live grep in the scope `label`. |
