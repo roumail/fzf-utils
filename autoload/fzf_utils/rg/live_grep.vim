@@ -7,7 +7,6 @@ function! fzf_utils#rg#live_grep#replay() abort
   " Populated by s:on_exit after each accepted live grep
   let l:query = getreg('/')
 
-  " Get only the options from the last run, discard the old pattern.
   let [l:pattern, l:options] = s:split_args(s:last_args)
 
   call call(
@@ -19,17 +18,13 @@ endfunction
 function! s:split_args(arg_list) abort
   let sep = index(a:arg_list, '--')
 
-  " Step 1: Split into pattern and options based on --
   if sep == -1
-    " Scenario 3: No '--' found. Assume everything is the pattern.
     let pattern = join(a:arg_list, ' ')
     let options = []
   elseif sep == 0
-    " Scenario 2: '--' is the very first token. Empty pattern, only scope.
     let pattern = ''
     let options = a:arg_list[1:]
   else
-    " Scenario 1: '--' is in the middle. Pattern before, scope after.
     let pattern = join(a:arg_list[:sep-1], ' ')
     let options = a:arg_list[sep+1:]
   endif
@@ -52,7 +47,6 @@ function! s:on_exit(code) abort
 endfunction
 
 " Add query capture to an fzf.vim spec (e.g. from fzf#vim#with_preview).
-" fzf appends the accepted query to s:history_file; s:on_exit reads it back.
 function! fzf_utils#rg#live_grep#capture_query(spec) abort
   let l:opts = ['--history', s:history_file, '--history-size', '50',
         \ '--bind', 'ctrl-n:down']
@@ -66,19 +60,16 @@ function! fzf_utils#rg#live_grep#capture_query(spec) abort
 endfunction
 
 function! fzf_utils#rg#live_grep#parse_args(arg_list) abort
-  " Step 1: Split into pattern and options based on --
   let [pattern, options] = s:split_args(a:arg_list)
 
-  " Step 2: Separate options into paths (trailing /) and rg flags
   let rg_options = []
 
   for item in options
-    if item =~ '/$' || item =~ '^\.\{0,2\}/'  " Matches paths ending with / or starting with ./, .., or /
+    if item =~ '/$' || item =~ '^\.\{0,2\}/'
       " Pass as an rg path argument; a -g glob can't express ./, ../ or
       " absolute paths. Safe because the query always follows -e.
       call add(rg_options, shellescape(item))
     else
-      " Keep regular rg flags as-is
       call add(rg_options, item)
     endif
   endfor
@@ -88,7 +79,6 @@ endfunction
 
 
 function! fzf_utils#rg#live_grep#interactive(bang, ...) abort
-  " Save state for replay
   let s:last_bang = a:bang
   let s:last_args = a:000
 
@@ -116,7 +106,6 @@ function! fzf_utils#rg#live_grep#interactive(bang, ...) abort
   call fzf#vim#grep2(l:cmd_regex, l:pattern, l:preview_opts, a:bang)
 endfunction
 
-" Convenience wrapper - always fullscreen
 function! fzf_utils#rg#live_grep#fullscreen(...) abort
   call call('fzf_utils#rg#live_grep#interactive', [1] + a:000)
 endfunction
