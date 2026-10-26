@@ -40,7 +40,6 @@ function! s:init_common() abort
   command! BD call fzf_utils#common#buffers#delete()
 endfunction
 
-" fd
 function! s:init_fd() abort
   " fzf.vim's :Files, listing files with fd (following :FzfToggleIgnored).
   " Own name, so fzf.vim's commands are left alone.
@@ -52,7 +51,6 @@ function! s:init_fd() abort
   nnoremap <silent> <Plug>(fzf-utils-files) <Cmd>FdFiles<CR>
 endfunction
 
-" ripgrep
 function! s:init_rg() abort
   " Grep: Live grep (updates search results as you type in fzf)
   "
