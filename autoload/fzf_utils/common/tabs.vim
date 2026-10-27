@@ -1,6 +1,11 @@
+function! s:buf_label(b) abort
+  let l:name = fnamemodify(bufname(a:b), ':t')
+  return empty(l:name) ? '[No Name]' : l:name
+endfunction
+
 function! s:list_tabs() abort
   return map(range(1, tabpagenr('$')), {_, nr ->
-        \ nr . "\t" . join(map(tabpagebuflist(nr), {_, b -> fnamemodify(bufname(b), ':t') ?: '[No Name]'}), ', ')})
+        \ nr . "\t" . join(map(tabpagebuflist(nr), {_, b -> s:buf_label(b)}), ', ')})
 endfunction
 
 function! s:close_tabs(lines) abort
