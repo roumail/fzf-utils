@@ -16,6 +16,7 @@ to wipe out.
 | `:RgRaw[!] <rg args>` | | rg | Static grep: ripgrep runs once with your arguments as given (`:RgRaw -g "*.vim" foo src/`), fzf filters the result. |
 | `:FzfToggleIgnored` | | | Include or leave out ignored files in `:FdFiles`, `:Grep` and `:RgRaw`. |
 | `:BD` | | | Pick buffers to wipe out (`<Tab>` marks several, `ctrl-a` takes all). |
+| `:TD` | | | Pick tabs to close (`<Tab>` marks several, `ctrl-a` takes all). |
 
 Commands and mappings that need fd or rg are defined when that tool is
 installed. `:Grep` and `:RgRaw` save the accepted query to the search register
