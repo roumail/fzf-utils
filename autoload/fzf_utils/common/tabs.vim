@@ -9,10 +9,26 @@ function! s:list_tabs() abort
 endfunction
 
 function! s:close_tabs(lines) abort
+  let l:nrs = map(copy(a:lines), {_, l -> str2nr(split(l, "\t")[0])})
+  if len(l:nrs) == tabpagenr('$')
+    " Vim keeps one tab: an empty one
+    $tabnew
+  endif
+  let l:left = 0
   " Highest first, so closing one doesn't renumber those still to close
-  for nr in reverse(sort(map(copy(a:lines), {_, l -> str2nr(split(l, "\t")[0])}), 'n'))
-    execute 'tabclose' nr
+  for nr in reverse(sort(l:nrs, 'n'))
+    try
+      execute 'tabclose' nr
+    catch
+      " A file changed and not written
+      let l:left += 1
+    endtry
   endfor
+  if l:left
+    echohl ErrorMsg
+    echomsg 'fzf-utils: ' . l:left . ' tab(s) left open: unsaved changes'
+    echohl None
+  endif
 endfunction
 
 function! fzf_utils#common#tabs#close() abort
