@@ -1,4 +1,4 @@
-" fzf-utils: additions to fzf.vim. :FzfToggleIgnored and :BD always;
+" fzf-utils: additions to fzf.vim. :FzfToggleIgnored and :BD and :TD always;
 " :FdFiles when fd is installed; :Grep and :RgRaw when rg is installed.
 " Requires junegunn/fzf and junegunn/fzf.vim.
 if exists('g:loaded_fzf_utils')
@@ -38,6 +38,9 @@ function! s:init_common() abort
 
   " Pick buffers to wipe out (<Tab> marks several, ctrl-a takes them all)
   command! BD call fzf_utils#common#buffers#delete()
+
+  " Pick tabs to close (<Tab> marks several, ctrl-a takes them all)
+  command! TD call fzf_utils#common#tabs#close()
 endfunction
 
 function! s:init_fd() abort
