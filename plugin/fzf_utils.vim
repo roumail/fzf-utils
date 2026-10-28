@@ -96,7 +96,8 @@ function! s:init_rg() abort
   "   :Grep -- -g "*.vim"
   "   :Grep error -- src/
   "   :Grep! pattern  " fullscreen
-  command! -bang -nargs=* Grep call fzf_utils#rg#live_grep#interactive(<bang>0, <f-args>)
+  " <Tab> after -- completes directories
+  command! -bang -nargs=* -complete=customlist,fzf_utils#rg#live_grep#complete Grep call fzf_utils#rg#live_grep#interactive(<bang>0, <f-args>)
 
   " RgRaw: Static grep (runs ripgrep once, then fzf filters that fixed list)
   "

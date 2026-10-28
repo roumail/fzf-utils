@@ -78,6 +78,15 @@ function! fzf_utils#rg#live_grep#parse_args(arg_list) abort
 endfunction
 
 
+" :Grep's completion: directories after `--`, ending in / so parse_args passes
+" them as paths; nothing for the pattern or for rg's flags
+function! fzf_utils#rg#live_grep#complete(lead, cmdline, pos) abort
+  if a:cmdline[: a:pos - 1] !~# '\s--\s' || a:lead =~# '^-'
+    return []
+  endif
+  return getcompletion(a:lead, 'dir')
+endfunction
+
 function! fzf_utils#rg#live_grep#interactive(bang, ...) abort
   let s:last_bang = a:bang
   let s:last_args = a:000

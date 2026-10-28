@@ -8,7 +8,7 @@ to wipe out.
 | Command | `<Plug>` mapping | Needs | What it does |
 | --- | --- | --- | --- |
 | `:FdFiles[!] [dir]` | `<Plug>(fzf-utils-files)` | fd | Find files: fzf.vim's `:Files`, listing with fd. |
-| `:Grep[!] [pattern] [-- rg-options/paths]` | `<Plug>(fzf-utils-grep)` | rg | Live grep: ripgrep re-runs as you type. `C-r` regex, `C-f` fixed string, `C-w` word. |
+| `:Grep[!] [pattern] [-- rg-options/paths]` | `<Plug>(fzf-utils-grep)` | rg | Live grep: ripgrep re-runs as you type. `C-r` regex, `C-f` fixed string, `C-w` word. After `--`, `<Tab>` completes directories, with the `/` that makes them paths. |
 | | `<Plug>(fzf-utils-grep-dir)` | rg | `:Grep` in the current buffer's directory. |
 | | `<Plug>(fzf-utils-grep-replay)` | rg | Replay the last live grep with its last query. |
 | `:GrepScope [pattern]` | `<Plug>(fzf-utils-grep-scope)` | rg | Pick a scope of the current project ([Project scopes](#project-scopes)), then `:Grep` in it. Without a project, a plain `:Grep`. |
