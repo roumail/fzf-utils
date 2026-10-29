@@ -100,9 +100,9 @@ endfunction
 
 " For the gw / gW mappings: in a buffer of the project's language, grep the
 " project's code / tests (a:part) for the word under the cursor or the
-" selection. Anywhere else a:key, Vim's own command.
+" selection. Anywhere else, or without fzf.vim, a:key, Vim's own command.
 function! fzf_utils#rg#scope#word_key(part, key) abort
-  if !exists('g:loaded_project_detect') || empty(&filetype)
+  if !exists('g:loaded_fzf_vim') || !exists('g:loaded_project_detect') || empty(&filetype)
         \ || &filetype !=# project_detect#language()
     return a:key
   endif

@@ -6,29 +6,14 @@ if exists('g:loaded_fzf_utils')
 endif
 let g:loaded_fzf_utils = 1
 
-" Required plugins are checked once every plugin has loaded (VimEnter, or now
-" when loaded later): their g:loaded_* guards tell whether they are installed.
-" Without them nothing below is defined.
-function! s:init() abort
-  let l:missing = filter({
+" Warns at startup when a required plugin isn't loaded (roumail/vim-requires)
+try
+  call roumail_requires#check('fzf-utils', {
         \ 'junegunn/fzf': 'g:loaded_fzf',
         \ 'junegunn/fzf.vim': 'g:loaded_fzf_vim',
-        \ }, '!exists(v:val)')
-  if !empty(l:missing)
-    echohl WarningMsg
-    echomsg 'fzf-utils: not loaded, requires ' . join(sort(keys(l:missing)), ', ')
-    echohl None
-    return
-  endif
-
-  call s:init_common()
-  if executable('fd')
-    call s:init_fd()
-  endif
-  if executable('rg')
-    call s:init_rg()
-  endif
-endfunction
+        \ })
+catch /^Vim\%((\a\+)\)\=:E117:/
+endtry
 
 " Needs only fzf and fzf.vim
 function! s:init_common() abort
@@ -150,11 +135,10 @@ function! s:init_rg() abort
   xnoremap <expr> gW fzf_utils#rg#scope#word_key('tests', 'gW')
 endfunction
 
-if v:vim_did_enter
-  call s:init()
-else
-  augroup fzf_utils_init
-    autocmd!
-    autocmd VimEnter * ++once call s:init()
-  augroup END
+call s:init_common()
+if executable('fd')
+  call s:init_fd()
+endif
+if executable('rg')
+  call s:init_rg()
 endif
