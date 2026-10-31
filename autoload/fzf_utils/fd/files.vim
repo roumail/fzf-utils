@@ -14,16 +14,10 @@ function! s:fd_cmd() abort
   return l:cmd
 endfunction
 
-" fzf options that make fd the file source, following the ignore toggle.
-" Nothing global is changed: $FZF_DEFAULT_COMMAND is left alone.
 function! fzf_utils#fd#files#options() abort
   return {'source': s:fd_cmd()}
 endfunction
 
-" Pick files under dir (<Tab> marks several) with the same listing and
-" preview as :FdFiles, then call callback with their absolute paths. For other
-" plugins, e.g. as vim-prompts' g:prompts_file_picker. fzf runs in a
-" terminal, so the callback comes once the pick is done, not on return.
 function! fzf_utils#fd#files#pick(dir, callback) abort
   let l:dir = fnamemodify(expand(a:dir), ':p')
   let l:spec = fzf#vim#with_preview(extend(fzf_utils#fd#files#options(), {
@@ -32,5 +26,6 @@ function! fzf_utils#fd#files#pick(dir, callback) abort
         \ }))
   let l:spec['sink*'] = {lines -> a:callback(map(filter(copy(lines), '!empty(v:val)'),
         \ {_, f -> fnamemodify(l:dir . f, ':p')}))}
+  " fzf runs in a terminal: the callback comes after this returns
   call fzf#run(fzf#wrap('fzf-utils-pick', l:spec))
 endfunction

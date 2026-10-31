@@ -1,12 +1,9 @@
-" fzf-utils: additions to fzf.vim. :FzfToggleIgnored and :BD and :TD always;
-" :FdFiles when fd is installed; :Grep and :RgRaw when rg is installed.
-" Requires junegunn/fzf and junegunn/fzf.vim.
 if exists('g:loaded_fzf_utils')
   finish
 endif
 let g:loaded_fzf_utils = 1
 
-" Warns at startup when a required plugin isn't loaded (roumail/vim-requires)
+" roumail/vim-requires is optional
 try
   call roumail_requires#check('fzf-utils', {
         \ 'junegunn/fzf': 'g:loaded_fzf',
@@ -15,7 +12,6 @@ try
 catch /^Vim\%((\a\+)\)\=:E117:/
 endtry
 
-" Needs only fzf and fzf.vim
 function! s:init_common() abort
   " Flips g:fzf_utils_include_ignored, read by :FdFiles, :Grep and :RgRaw
   " (see README)

@@ -1,10 +1,8 @@
 let s:last_bang = 0
 let s:last_args = []
-" fzf appends the accepted query here; read back in s:on_exit
 let s:history_file = tempname()
 
 function! fzf_utils#rg#live_grep#replay() abort
-  " Populated by s:on_exit after each accepted live grep
   let l:query = getreg('/')
 
   let [l:pattern, l:options] = s:split_args(s:last_args)
@@ -31,10 +29,8 @@ function! s:split_args(arg_list) abort
   return [pattern, options]
 endfunction
 
-" Copy the accepted fzf query into the search register and history so that
-" replay, n/N and :History/ see it. Called by fzf before the sink opens the
-" selected file.
 function! s:on_exit(code) abort
+  " So that replay, n/N and :History/ see the accepted query
   if a:code != 0 || !filereadable(s:history_file)
     return
   endif
@@ -46,7 +42,6 @@ function! s:on_exit(code) abort
   call histadd('/', l:lines[-1])
 endfunction
 
-" Add query capture to an fzf.vim spec (e.g. from fzf#vim#with_preview).
 function! fzf_utils#rg#live_grep#capture_query(spec) abort
   let l:opts = ['--history', s:history_file, '--history-size', '50',
         \ '--bind', 'ctrl-n:down']
@@ -78,12 +73,11 @@ function! fzf_utils#rg#live_grep#parse_args(arg_list) abort
 endfunction
 
 
-" :Grep's completion: directories after `--`, ending in / so parse_args passes
-" them as paths; nothing for the pattern or for rg's flags
 function! fzf_utils#rg#live_grep#complete(lead, cmdline, pos) abort
   if a:cmdline[: a:pos - 1] !~# '\s--\s' || a:lead =~# '^-'
     return []
   endif
+  " With their trailing /, which makes parse_args pass them as paths
   return getcompletion(a:lead, 'dir')
 endfunction
 
@@ -123,9 +117,6 @@ function! fzf_utils#rg#live_grep#window(...) abort
   call call('fzf_utils#rg#live_grep#interactive', [0] + a:000)
 endfunction
 
-" The selection in visual mode, else the word under the cursor, as a ripgrep
-" regex with word boundaries. Regex characters in it are escaped, so it matches
-" literally (live grep starts in regex mode).
 function! fzf_utils#rg#live_grep#word_pattern() abort
   let l:mode = mode()
   if l:mode =~# "^[vV\<C-v>]"
@@ -141,5 +132,6 @@ function! fzf_utils#rg#live_grep#word_pattern() abort
   else
     let l:text = expand('<cword>')
   endif
+  " Live grep starts in regex mode
   return '\b' . escape(l:text, '\.^$*+?()[]{}|') . '\b'
 endfunction
