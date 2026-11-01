@@ -96,20 +96,20 @@ In other buffers `gw` is Vim's own.
 
 | Function | What it does |
 | --- | --- |
-| `fzf_utils#rg#scope#pick([pattern])` | `:GrepScope`: pick a scope in fzf, then live grep in it. |
-| `fzf_utils#rg#scope#code([pattern])` | Live grep in the project's code, in its language. |
-| `fzf_utils#rg#scope#tests([pattern])` | Live grep in the project's tests, in its language. |
-| `fzf_utils#rg#scope#grep(label [, pattern])` | Live grep in the scope `label`. |
-| `fzf_utils#rg#scope#list()` | `[label, rg-args]` pairs: `all`, then the project's scopes. |
-| `fzf_utils#rg#scope#args(scope)` | The rg arguments for a scope: `{'root': …, 'places': …, 'language': …}`, with `places` directories (trailing `/`) and file globs relative to `root`, `[]` for all of it, and `language` an rg type or `''`. |
-| `fzf_utils#rg#live_grep#word_pattern()` | The word under the cursor, or the visual selection, as a pattern: regex characters escaped, wrapped in `\b`. |
+| `fzf_utils#grep_scope_pick([pattern])` | `:GrepScope`: pick a scope in fzf, then live grep in it. |
+| `fzf_utils#grep_code([pattern])` | Live grep in the project's code, in its language. |
+| `fzf_utils#grep_tests([pattern])` | Live grep in the project's tests, in its language. |
+| `fzf_utils#grep_scope(label [, pattern])` | Live grep in the scope `label`. |
+| `fzf_utils#grep_scopes()` | `[label, rg-args]` pairs: `all`, then the project's scopes. |
+| `fzf_utils#grep_scope_args(scope)` | The rg arguments for a scope: `{'root': …, 'places': …, 'language': …}`, with `places` directories (trailing `/`) and file globs relative to `root`, `[]` for all of it, and `language` an rg type or `''`. |
+| `fzf_utils#word_pattern()` | The word under the cursor, or the visual selection, as a pattern: regex characters escaped, wrapped in `\b`. |
 
 The project is looked up when they are called, so mappings work in any
 project:
 
 ```vim
-nnoremap <leader>rp <Cmd>call fzf_utils#rg#scope#code()<CR>
-nnoremap <leader>rt <Cmd>call fzf_utils#rg#scope#tests()<CR>
+nnoremap <leader>rp <Cmd>call fzf_utils#grep_code()<CR>
+nnoremap <leader>rt <Cmd>call fzf_utils#grep_tests()<CR>
 ```
 
 Where the project has no such scope, they print
