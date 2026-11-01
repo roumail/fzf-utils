@@ -15,13 +15,13 @@ endtry
 function! s:init_common() abort
   " Flips g:fzf_utils_include_ignored, read by :FdFiles, :Grep and :RgRaw
   " (see README)
-  command! FzfToggleIgnored call fzf_utils#common#toggle#toggle_ignored()
+  command! FzfToggleIgnored call fzf_utils#ignored#toggle()
 
   " Pick buffers to wipe out (<Tab> marks several, ctrl-a takes them all)
-  command! BD call fzf_utils#common#buffers#delete()
+  command! BD call fzf_utils#buffers#delete()
 
   " Pick tabs to close (<Tab> marks several, ctrl-a takes them all)
-  command! TD call fzf_utils#common#tabs#close()
+  command! TD call fzf_utils#tabs#close()
 endfunction
 
 function! s:init_fd() abort
@@ -29,7 +29,7 @@ function! s:init_fd() abort
   " Own name, so fzf.vim's commands are left alone.
   " https://github.com/junegunn/fzf.vim?tab=readme-ov-file#example-customizing-files-command
   command! -bang -nargs=? -complete=dir FdFiles
-        \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(fzf_utils#fd#files#options()), <bang>0)
+        \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(fzf_utils#files#options()), <bang>0)
 
   " <Plug> mapping; no keys are bound here (see README)
   nnoremap <silent> <Plug>(fzf-utils-files) <Cmd>FdFiles<CR>
@@ -78,7 +78,7 @@ function! s:init_rg() abort
   "   :Grep error -- src/
   "   :Grep! pattern  " fullscreen
   " <Tab> after -- completes directories
-  command! -bang -nargs=* -complete=customlist,fzf_utils#rg#live_grep#complete Grep call fzf_utils#rg#live_grep#interactive(<bang>0, <f-args>)
+  command! -bang -nargs=* -complete=customlist,fzf_utils#grep#complete Grep call fzf_utils#grep#interactive(<bang>0, <f-args>)
 
   " RgRaw: Static grep (runs ripgrep once, then fzf filters that fixed list)
   "
@@ -98,8 +98,8 @@ function! s:init_rg() abort
   "   :RgRaw   → Normal mode (windowed)
   " https://github.com/junegunn/fzf.vim/issues/1533#issuecomment-2015075571
   command! -bang -nargs=* RgRaw call fzf#vim#grep(
-        \ fzf_utils#rg#ripgrep#get_command() . " " . <q-args>,
-        \ fzf_utils#rg#live_grep#capture_query(fzf#vim#with_preview({
+        \ fzf_utils#grep#command() . " " . <q-args>,
+        \ fzf_utils#grep#capture_query(fzf#vim#with_preview({
         \       'options': '--delimiter : --nth 4.. --preview-window +{2}-5,~3'
         \       }, 'right:50%', 'ctrl-p')),
         \ <bang>0)
@@ -116,7 +116,7 @@ function! s:init_rg() abort
   nnoremap <silent> <Plug>(fzf-utils-grep-scope-word) <Cmd>call fzf_utils#grep_scope_pick(fzf_utils#word_pattern())<CR>
   xnoremap <silent> <Plug>(fzf-utils-grep-scope-word) <Cmd>call fzf_utils#grep_scope_pick(fzf_utils#word_pattern())<CR>
   " Replay the last live grep with its last query
-  nnoremap <silent> <Plug>(fzf-utils-grep-replay) <Cmd>call fzf_utils#rg#live_grep#replay()<CR>
+  nnoremap <silent> <Plug>(fzf-utils-grep-replay) <Cmd>call fzf_utils#grep#replay()<CR>
   " Live grep in the current buffer's directory
   nnoremap <silent> <Plug>(fzf-utils-grep-dir) <Cmd>execute 'Grep -- ' . expand('%:.:h') . '/'<CR>
   " Live grep from the working directory
@@ -125,10 +125,10 @@ function! s:init_rg() abort
   " In a buffer of the project's language (project-detect): live grep the
   " project's code (gw) / tests (gW) for the word under the cursor or the
   " selection. Elsewhere Vim's own gw.
-  nnoremap <expr> gw fzf_utils#rg#scope#word_key('code', 'gw')
-  xnoremap <expr> gw fzf_utils#rg#scope#word_key('code', 'gw')
-  nnoremap <expr> gW fzf_utils#rg#scope#word_key('tests', 'gW')
-  xnoremap <expr> gW fzf_utils#rg#scope#word_key('tests', 'gW')
+  nnoremap <expr> gw fzf_utils#grep#word_key('code', 'gw')
+  xnoremap <expr> gw fzf_utils#grep#word_key('code', 'gw')
+  nnoremap <expr> gW fzf_utils#grep#word_key('tests', 'gW')
+  xnoremap <expr> gW fzf_utils#grep#word_key('tests', 'gW')
 endfunction
 
 call s:init_common()

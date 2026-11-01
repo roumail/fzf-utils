@@ -1,14 +1,37 @@
+" Hidden files are searched and symlinks followed; .git and __pycache__ never
+" are. --no-config ignores $RIPGREP_CONFIG_PATH, so the result doesn't depend
+" on per-user rg setup. Must search the same files files.vim lists.
+let s:rg_base = 'rg --no-config --column --line-number --no-heading --color=always'
+      \ . ' --smart-case --hidden --follow --glob=!.git --glob=!__pycache__'
+
+function! fzf_utils#grep#command() abort
+  return s:rg_base . (get(g:, 'fzf_utils_include_ignored', 0) ? ' --no-ignore' : '')
+endfunction
+
+function! s:command_factory(extra_opts) abort
+  " Don't escape - <f-args> already gave us properly parsed arguments
+  let l:cmd = fzf_utils#grep#command()
+  if !empty(a:extra_opts)
+    let l:cmd .= ' ' . join(a:extra_opts, ' ')
+  endif
+  return l:cmd
+endfunction
+
+function! s:mode(prefix, flag) abort
+  return a:prefix . (empty(a:flag) ? '' : ' ' . a:flag) . ' -e'
+endfunction
+
 let s:last_bang = 0
 let s:last_args = []
 let s:history_file = tempname()
 
-function! fzf_utils#rg#live_grep#replay() abort
+function! fzf_utils#grep#replay() abort
   let l:query = getreg('/')
 
   let [l:pattern, l:options] = s:split_args(s:last_args)
 
   call call(
-        \ 'fzf_utils#rg#live_grep#interactive',
+        \ 'fzf_utils#grep#interactive',
         \ [s:last_bang, l:query, '--'] + l:options
         \ )
 endfunction
@@ -42,7 +65,7 @@ function! s:on_exit(code) abort
   call histadd('/', l:lines[-1])
 endfunction
 
-function! fzf_utils#rg#live_grep#capture_query(spec) abort
+function! fzf_utils#grep#capture_query(spec) abort
   let l:opts = ['--history', s:history_file, '--history-size', '50',
         \ '--bind', 'ctrl-n:down']
   if type(get(a:spec, 'options', [])) == v:t_list
@@ -54,7 +77,7 @@ function! fzf_utils#rg#live_grep#capture_query(spec) abort
   return a:spec
 endfunction
 
-function! fzf_utils#rg#live_grep#parse_args(arg_list) abort
+function! s:parse_args(arg_list) abort
   let [pattern, options] = s:split_args(a:arg_list)
 
   let rg_options = []
@@ -73,7 +96,7 @@ function! fzf_utils#rg#live_grep#parse_args(arg_list) abort
 endfunction
 
 
-function! fzf_utils#rg#live_grep#complete(lead, cmdline, pos) abort
+function! fzf_utils#grep#complete(lead, cmdline, pos) abort
   if a:cmdline[: a:pos - 1] !~# '\s--\s' || a:lead =~# '^-'
     return []
   endif
@@ -81,17 +104,17 @@ function! fzf_utils#rg#live_grep#complete(lead, cmdline, pos) abort
   return getcompletion(a:lead, 'dir')
 endfunction
 
-function! fzf_utils#rg#live_grep#interactive(bang, ...) abort
+function! fzf_utils#grep#interactive(bang, ...) abort
   let s:last_bang = a:bang
   let s:last_args = a:000
 
-  let [l:options, l:pattern] = fzf_utils#rg#live_grep#parse_args(a:000)
+  let [l:options, l:pattern] = s:parse_args(a:000)
 
-  let l:prefix = fzf_utils#rg#ripgrep#command_factory(l:options)
+  let l:prefix = s:command_factory(l:options)
 
-  let l:cmd_regex = fzf_utils#rg#ripgrep#mode(l:prefix, '')
-  let l:cmd_fixed = fzf_utils#rg#ripgrep#mode(l:prefix, '-F')
-  let l:cmd_word  = fzf_utils#rg#ripgrep#mode(l:prefix, '-w')
+  let l:cmd_regex = s:mode(l:prefix, '')
+  let l:cmd_fixed = s:mode(l:prefix, '-F')
+  let l:cmd_word  = s:mode(l:prefix, '-w')
 
   let l:preview_opts = fzf#vim#with_preview({
         \ 'options': [
@@ -103,16 +126,20 @@ function! fzf_utils#rg#live_grep#interactive(bang, ...) abort
         \   '--bind', 'ctrl-r:change-prompt(Regex> )+reload(' . l:cmd_regex . ' {q})',
         \ ]
         \ }, 'right,70%,border-left,+{2}+4/3,~4', 'ctrl-p')
-  call fzf_utils#rg#live_grep#capture_query(l:preview_opts)
+  call fzf_utils#grep#capture_query(l:preview_opts)
 
   " Start in regex mode; '-e' keeps the query from being read as a path or flag
   call fzf#vim#grep2(l:cmd_regex, l:pattern, l:preview_opts, a:bang)
 endfunction
 
-function! fzf_utils#rg#live_grep#fullscreen(...) abort
-  call call('fzf_utils#rg#live_grep#interactive', [1] + a:000)
+function! fzf_utils#grep#window(...) abort
+  call call('fzf_utils#grep#interactive', [0] + a:000)
 endfunction
 
-function! fzf_utils#rg#live_grep#window(...) abort
-  call call('fzf_utils#rg#live_grep#interactive', [0] + a:000)
+function! fzf_utils#grep#word_key(part, key) abort
+  if !exists('g:loaded_fzf_vim') || !exists('g:loaded_project_detect') || empty(&filetype)
+        \ || &filetype !=# project_detect#language()
+    return a:key
+  endif
+  return printf("\<Cmd>call fzf_utils#grep_%s(fzf_utils#word_pattern())\<CR>", a:part)
 endfunction
