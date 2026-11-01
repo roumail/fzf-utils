@@ -108,13 +108,13 @@ function! s:init_rg() abort
   " then live grep in it. Without a project it is a plain :Grep.
   "   :GrepScope
   "   :GrepScope pattern
-  command! -nargs=? GrepScope call fzf_utils#rg#scope#pick(<f-args>)
+  command! -nargs=? GrepScope call fzf_utils#grep_scope_pick(<f-args>)
 
   " <Plug> mappings; no keys are bound here (see README)
   " :GrepScope, and :GrepScope for the word under the cursor / the selection
   nnoremap <silent> <Plug>(fzf-utils-grep-scope) <Cmd>GrepScope<CR>
-  nnoremap <silent> <Plug>(fzf-utils-grep-scope-word) <Cmd>call fzf_utils#rg#scope#pick(fzf_utils#rg#live_grep#word_pattern())<CR>
-  xnoremap <silent> <Plug>(fzf-utils-grep-scope-word) <Cmd>call fzf_utils#rg#scope#pick(fzf_utils#rg#live_grep#word_pattern())<CR>
+  nnoremap <silent> <Plug>(fzf-utils-grep-scope-word) <Cmd>call fzf_utils#grep_scope_pick(fzf_utils#word_pattern())<CR>
+  xnoremap <silent> <Plug>(fzf-utils-grep-scope-word) <Cmd>call fzf_utils#grep_scope_pick(fzf_utils#word_pattern())<CR>
   " Replay the last live grep with its last query
   nnoremap <silent> <Plug>(fzf-utils-grep-replay) <Cmd>call fzf_utils#rg#live_grep#replay()<CR>
   " Live grep in the current buffer's directory
