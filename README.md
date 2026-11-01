@@ -34,13 +34,13 @@ nmap <leader>rs <Plug>(fzf-utils-grep-scope)
 nnoremap <leader>r: :Grep
 ```
 
-For other plugins, `fzf_utils#fd#files#pick(dir, callback)` picks files under
+For other plugins, `fzf_utils#pick_files(dir, callback)` picks files under
 `dir` the same way (`<Tab>` marks several) and calls `callback` with their
 absolute paths once the pick is done, e.g. for
 [vim-prompts](https://github.com/roumail/vim-prompts):
 
 ```vim
-let g:prompts_file_picker = 'fzf_utils#fd#files#pick'
+let g:prompts_file_picker = 'fzf_utils#pick_files'
 ```
 
 ## Files searched
