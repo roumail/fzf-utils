@@ -1,7 +1,7 @@
 " Hidden files are listed and symlinks followed; .git and __pycache__ never
 " are. Every option is spelled out and the global ignore file
 " (~/.config/fd/ignore) is skipped, so the result doesn't depend on per-user fd
-" setup. Must list the same files rg/ripgrep.vim searches.
+" setup. Must list the same files grep.vim searches.
 let s:fd_base = 'fd --type f --strip-cwd-prefix --hidden --follow'
       \ . ' --no-global-ignore-file --exclude .git -E "**/__pycache__/**"'
 
@@ -14,6 +14,6 @@ function! s:fd_cmd() abort
   return l:cmd
 endfunction
 
-function! fzf_utils#fd#files#options() abort
+function! fzf_utils#files#options() abort
   return {'source': s:fd_cmd()}
 endfunction

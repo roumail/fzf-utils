@@ -1,6 +1,6 @@
 function! fzf_utils#pick_files(dir, callback) abort
   let l:dir = fnamemodify(expand(a:dir), ':p')
-  let l:spec = fzf#vim#with_preview(extend(fzf_utils#fd#files#options(), {
+  let l:spec = fzf#vim#with_preview(extend(fzf_utils#files#options(), {
         \ 'dir': l:dir,
         \ 'options': ['--multi', '--prompt', fnamemodify(l:dir, ':~') . ' '],
         \ }))
@@ -66,7 +66,7 @@ function! fzf_utils#grep_scope(label, ...) abort
   " Looked up on each call, so mappings can be made before the project is known
   for [l:label, l:args] in fzf_utils#grep_scopes()
     if l:label ==# a:label
-      call call('fzf_utils#rg#live_grep#window', (a:0 && !empty(a:1) ? [a:1] : []) + ['--'] + l:args)
+      call call('fzf_utils#grep#window', (a:0 && !empty(a:1) ? [a:1] : []) + ['--'] + l:args)
       return
     endif
   endfor
@@ -77,7 +77,7 @@ function! fzf_utils#grep_scope_pick(...) abort
   let l:pattern = a:0 ? a:1 : ''
   let l:labels = map(fzf_utils#grep_scopes(), 'v:val[0]')
   if len(l:labels) == 1
-    call call('fzf_utils#rg#live_grep#window', a:0 ? [a:1] : [])
+    call call('fzf_utils#grep#window', a:0 ? [a:1] : [])
     return
   endif
   call fzf#run(fzf#wrap({

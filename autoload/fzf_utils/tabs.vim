@@ -31,7 +31,7 @@ function! s:close_tabs(lines) abort
   endif
 endfunction
 
-function! fzf_utils#common#tabs#close() abort
+function! fzf_utils#tabs#close() abort
   call fzf#run(fzf#wrap({
         \ 'source': s:list_tabs(),
         \ 'sink*': { lines -> s:close_tabs(lines) },
