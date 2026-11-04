@@ -3,15 +3,6 @@ if exists('g:loaded_fzf_utils')
 endif
 let g:loaded_fzf_utils = 1
 
-" roumail/vim-requires is optional
-try
-  call roumail_requires#check('fzf-utils', {
-        \ 'junegunn/fzf': 'g:loaded_fzf',
-        \ 'junegunn/fzf.vim': 'g:loaded_fzf_vim',
-        \ })
-catch /^Vim\%((\a\+)\)\=:E117:/
-endtry
-
 function! s:init_common() abort
   " Flips g:fzf_utils_include_ignored, read by :FdFiles, :Grep and :RgRaw
   " (see README)
