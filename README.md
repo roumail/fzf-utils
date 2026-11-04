@@ -119,13 +119,10 @@ Where the project has no such scope, they print
 
 Requires [fzf](https://github.com/junegunn/fzf) and fzf.vim. `:FdFiles` also
 requires `fd`; `:Grep`, `:RgRaw` and the grep mappings require `rg`.
-With [vim-requires](https://github.com/roumail/vim-requires), Vim shows
-`fzf-utils: requires …` at startup when one isn't loaded.
 
 ```vim
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
-Plug 'roumail/vim-requires'  " optional: the startup warning
 Plug 'roumail/fzf-utils'
 Plug 'roumail/project-detect'  " for project scopes
 ```
