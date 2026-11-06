@@ -113,13 +113,18 @@ function! s:init_rg() abort
   " Live grep from the working directory
   nnoremap <silent> <Plug>(fzf-utils-grep) <Cmd>Grep<CR>
 
-  " In a buffer of the project's language (project-detect): live grep the
-  " project's code (gw) / tests (gW) for the word under the cursor or the
-  " selection. Elsewhere Vim's own gw.
-  nnoremap <expr> gw fzf_utils#grep#word_key('code', 'gw')
-  xnoremap <expr> gw fzf_utils#grep#word_key('code', 'gw')
-  nnoremap <expr> gW fzf_utils#grep#word_key('tests', 'gW')
-  xnoremap <expr> gW fzf_utils#grep#word_key('tests', 'gW')
+  " Live grep from the working directory for the word under the cursor / the
+  " selection
+  nnoremap <silent> <Plug>(fzf-utils-grep-word) <Cmd>call fzf_utils#grep#window(fzf_utils#word_pattern())<CR>
+  xnoremap <silent> <Plug>(fzf-utils-grep-word) <Cmd>call fzf_utils#grep#window(fzf_utils#word_pattern())<CR>
+  " Live grep in the project's code / tests (project-detect), in its language;
+  " -word for the word under the cursor / the selection
+  nnoremap <silent> <Plug>(fzf-utils-grep-code) <Cmd>call fzf_utils#grep_code()<CR>
+  nnoremap <silent> <Plug>(fzf-utils-grep-code-word) <Cmd>call fzf_utils#grep_code(fzf_utils#word_pattern())<CR>
+  xnoremap <silent> <Plug>(fzf-utils-grep-code-word) <Cmd>call fzf_utils#grep_code(fzf_utils#word_pattern())<CR>
+  nnoremap <silent> <Plug>(fzf-utils-grep-tests) <Cmd>call fzf_utils#grep_tests()<CR>
+  nnoremap <silent> <Plug>(fzf-utils-grep-tests-word) <Cmd>call fzf_utils#grep_tests(fzf_utils#word_pattern())<CR>
+  xnoremap <silent> <Plug>(fzf-utils-grep-tests-word) <Cmd>call fzf_utils#grep_tests(fzf_utils#word_pattern())<CR>
 endfunction
 
 call s:init_common()

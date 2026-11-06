@@ -9,10 +9,13 @@ to wipe out.
 | --- | --- | --- | --- |
 | `:FdFiles[!] [dir]` | `<Plug>(fzf-utils-files)` | fd | Find files: fzf.vim's `:Files`, listing with fd. |
 | `:Grep[!] [pattern] [-- rg-options/paths]` | `<Plug>(fzf-utils-grep)` | rg | Live grep: ripgrep re-runs as you type. `C-r` regex, `C-f` fixed string, `C-w` word. After `--`, `<Tab>` completes directories, with the `/` that makes them paths. |
+| | `<Plug>(fzf-utils-grep-word)` | rg | `:Grep` for the word under the cursor, or the visual selection (n, x). |
 | | `<Plug>(fzf-utils-grep-dir)` | rg | `:Grep` in the current buffer's directory. |
 | | `<Plug>(fzf-utils-grep-replay)` | rg | Replay the last live grep with its last query. |
 | `:GrepScope [pattern]` | `<Plug>(fzf-utils-grep-scope)` | rg | Pick a scope of the current project ([Project scopes](#project-scopes)), then `:Grep` in it. Without a project, a plain `:Grep`. |
 | | `<Plug>(fzf-utils-grep-scope-word)` | rg | `:GrepScope` for the word under the cursor, or the visual selection (n, x). |
+| | `<Plug>(fzf-utils-grep-code)`, `<Plug>(fzf-utils-grep-code-word)` | rg | `:Grep` in the project's code, in its language; `-word` for the word under the cursor or the visual selection (n, x). |
+| | `<Plug>(fzf-utils-grep-tests)`, `<Plug>(fzf-utils-grep-tests-word)` | rg | The same in the project's tests. |
 | `:RgRaw[!] <rg args>` | | rg | Static grep: ripgrep runs once with your arguments as given (`:RgRaw -g "*.vim" foo src/`), fzf filters the result. |
 | `:FzfToggleIgnored` | | | Include or leave out ignored files in `:FdFiles`, `:Grep` and `:RgRaw`. |
 | `:BD` | | | Pick buffers to wipe out (`<Tab>` marks several, `ctrl-a` takes all). |
@@ -22,12 +25,15 @@ Commands and mappings that need fd or rg are defined when that tool is
 installed. `:Grep` and `:RgRaw` save the accepted query to the search register
 and `:History/`.
 
-Apart from `gw` / `gW` in project files ([Project scopes](#project-scopes)), no
-keys are bound. For example:
+Bind the `<Plug>` mappings to keys of your choice. For example, `<leader>r`
+then where to search, uppercase for the word under the cursor:
 
 ```vim
 nmap <leader><leader> <Plug>(fzf-utils-files)
 nmap <leader>r/ <Plug>(fzf-utils-grep)
+nmap <leader>r? <Plug>(fzf-utils-grep-word)
+nmap <leader>rp <Plug>(fzf-utils-grep-code)
+nmap <leader>rP <Plug>(fzf-utils-grep-code-word)
 nmap <leader>r. <Plug>(fzf-utils-grep-dir)
 nmap <leader>rr <Plug>(fzf-utils-grep-replay)
 nmap <leader>rs <Plug>(fzf-utils-grep-scope)
@@ -81,18 +87,8 @@ With [project-detect](https://github.com/roumail/project-detect) installed,
 `:Grep` can search one part of the current project: its code or its tests,
 optionally limited to its language. The scopes of a Python project are
 `project`, `project python`, `tests` and `tests python`. A Go project has
-`project go`, `tests` and `tests go`.
-
-In a buffer of the project's language (a Python file in a Python project, a Go
-file in a Go module), two keys grep the word under the cursor, or the visual
-selection, matched literally:
-
-| Key | Mode | Searches |
-| --- | --- | --- |
-| `gw` | n, x | the project's code, in its language |
-| `gW` | n, x | the project's tests, in its language |
-
-In other buffers `gw` is Vim's own.
+`project go`, `tests` and `tests go`. A Vim plugin has `project`,
+`project vim`, `tests` and `tests vim`.
 
 | Function | What it does |
 | --- | --- |
@@ -105,14 +101,7 @@ In other buffers `gw` is Vim's own.
 | `fzf_utils#word_pattern()` | The word under the cursor, or the visual selection, as a pattern: regex characters escaped, wrapped in `\b`. |
 
 The project is looked up when they are called, so mappings work in any
-project:
-
-```vim
-nnoremap <leader>rp <Cmd>call fzf_utils#grep_code()<CR>
-nnoremap <leader>rt <Cmd>call fzf_utils#grep_tests()<CR>
-```
-
-Where the project has no such scope, they print
+project. Where the project has no such scope, they print
 `Grep: no scope "<label>" in this project`.
 
 ## Install
