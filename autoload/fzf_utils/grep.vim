@@ -135,11 +135,3 @@ endfunction
 function! fzf_utils#grep#window(...) abort
   call call('fzf_utils#grep#interactive', [0] + a:000)
 endfunction
-
-function! fzf_utils#grep#word_key(part, key) abort
-  if !exists('g:loaded_fzf_vim') || !exists('g:loaded_project_detect') || empty(&filetype)
-        \ || &filetype !=# project_detect#language()
-    return a:key
-  endif
-  return printf("\<Cmd>call fzf_utils#grep_%s(fzf_utils#word_pattern())\<CR>", a:part)
-endfunction
