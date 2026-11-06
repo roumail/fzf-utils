@@ -13,6 +13,10 @@ function! s:init_common() abort
 
   " Pick tabs to close (<Tab> marks several, ctrl-a takes them all)
   command! TD call fzf_utils#tabs#close()
+
+  " <Plug> mappings; no keys are bound here (see README)
+  " Insert-mode line completion; Vim's own in the command-line window
+  inoremap <expr> <Plug>(fzf-utils-complete-line) fzf_utils#complete#line()
 endfunction
 
 function! s:init_fd() abort
@@ -112,6 +116,8 @@ function! s:init_rg() abort
   nnoremap <silent> <Plug>(fzf-utils-grep-dir) <Cmd>execute 'Grep -- ' . expand('%:.:h') . '/'<CR>
   " Live grep from the working directory
   nnoremap <silent> <Plug>(fzf-utils-grep) <Cmd>Grep<CR>
+  " Insert-mode file name completion; Vim's own in the command-line window
+  inoremap <expr> <Plug>(fzf-utils-complete-path) fzf_utils#complete#path()
 
   " Live grep from the working directory for the word under the cursor / the
   " selection

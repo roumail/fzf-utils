@@ -16,6 +16,8 @@ to wipe out.
 | | `<Plug>(fzf-utils-grep-scope-word)` | rg | `:GrepScope` for the word under the cursor, or the visual selection (n, x). |
 | | `<Plug>(fzf-utils-grep-code)`, `<Plug>(fzf-utils-grep-code-word)` | rg | `:Grep` in the project's code, in its language; `-word` for the word under the cursor or the visual selection (n, x). |
 | | `<Plug>(fzf-utils-grep-tests)`, `<Plug>(fzf-utils-grep-tests-word)` | rg | The same in the project's tests. |
+| | `<Plug>(fzf-utils-complete-path)` | rg | Insert mode: complete the file name before the cursor from `rg --files`. |
+| | `<Plug>(fzf-utils-complete-line)` | | Insert mode: complete a line of the open buffers. |
 | `:RgRaw[!] <rg args>` | | rg | Static grep: ripgrep runs once with your arguments as given (`:RgRaw -g "*.vim" foo src/`), fzf filters the result. |
 | `:FzfToggleIgnored` | | | Include or leave out ignored files in `:FdFiles`, `:Grep` and `:RgRaw`. |
 | `:BD` | | | Pick buffers to wipe out (`<Tab>` marks several, `ctrl-a` takes all). |
@@ -40,7 +42,30 @@ nmap <leader>rs <Plug>(fzf-utils-grep-scope)
 nnoremap <leader>r: :Grep
 ```
 
-For other plugins, `fzf_utils#pick_files(dir, callback)` picks files under
+## Completion in the command-line window
+
+fzf runs in a terminal window, which the command-line window (`q:`, `q/`,
+`<C-f>` on the command line) doesn't allow (E11). There
+`<Plug>(fzf-utils-complete-path)` and `<Plug>(fzf-utils-complete-line)` fall
+back to Vim's own `<C-x><C-f>` and `<C-x><C-l>`:
+
+```vim
+imap <c-x><c-f> <Plug>(fzf-utils-complete-path)
+imap <c-x><c-l> <Plug>(fzf-utils-complete-line)
+```
+
+For other fzf completions, `fzf_utils#complete#with(Spec)` calls
+`fzf#vim#complete()` with the spec `Spec()` returns (a Funcref or function
+name). In the command-line window it says fzf isn't available there, instead
+of failing:
+
+```vim
+inoremap <expr> <c-x><c-a> fzf_utils#complete#with('prompts#fzf')
+```
+
+## For other plugins
+
+`fzf_utils#pick_files(dir, callback)` picks files under
 `dir` the same way (`<Tab>` marks several) and calls `callback` with their
 absolute paths once the pick is done, e.g. for
 [vim-prompts](https://github.com/roumail/vim-prompts):
