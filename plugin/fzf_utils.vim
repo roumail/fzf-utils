@@ -1,10 +1,5 @@
-if exists('g:loaded_fzf_utils')
-  finish
-endif
-let g:loaded_fzf_utils = 1
-
 function! s:init_common() abort
-  " Flips g:fzf_utils_include_ignored, read by :FdFiles, :Grep and :RgRaw
+  " Flips g:fzf_utils_include_ignored, read by every file listing and search
   " (see README)
   command! FzfToggleIgnored call fzf_utils#ignored#toggle()
 

@@ -4,8 +4,18 @@
 let s:rg_base = 'rg --no-config --column --line-number --no-heading --color=always'
       \ . ' --smart-case --hidden --follow --glob=!.git --glob=!__pycache__'
 
+function! s:no_ignore() abort
+  return get(g:, 'fzf_utils_include_ignored', 0) ? ' --no-ignore' : ''
+endfunction
+
 function! fzf_utils#grep#command() abort
-  return s:rg_base . (get(g:, 'fzf_utils_include_ignored', 0) ? ' --no-ignore' : '')
+  return s:rg_base . s:no_ignore()
+endfunction
+
+" The files :FdFiles lists, as rg lists them (for <C-x><C-f>, which needs rg)
+function! fzf_utils#grep#files_command() abort
+  return 'rg --no-config --files --hidden --follow --glob=!.git --glob=!__pycache__'
+        \ . s:no_ignore()
 endfunction
 
 function! s:command_factory(extra_opts) abort

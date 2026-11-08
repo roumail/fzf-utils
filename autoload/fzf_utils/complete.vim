@@ -8,14 +8,14 @@ function! s:in_cmdwin() abort
   return getcmdwintype() !=# ''
 endfunction
 
-" Files from rg --files for the file name before the cursor. The prefix is
+" The files :FdFiles lists, for the file name before the cursor. The prefix is
 " \f, read with 'isfname': fzf.vim's own reading takes its @ (letters) for a
 " literal @, so @file would search for @file.
 function! fzf_utils#complete#path() abort
   if s:in_cmdwin()
     return "\<C-x>\<C-f>"
   endif
-  return fzf#vim#complete#path('rg --files', fzf#wrap({'prefix': '\f*$'}))
+  return fzf#vim#complete#path(fzf_utils#grep#files_command(), fzf#wrap({'prefix': '\f*$'}))
 endfunction
 
 " Lines of the open buffers
