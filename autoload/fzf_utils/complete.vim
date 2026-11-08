@@ -15,7 +15,12 @@ function! fzf_utils#complete#path() abort
   if s:in_cmdwin()
     return "\<C-x>\<C-f>"
   endif
-  return fzf#vim#complete#path(fzf_utils#grep#files_command(), fzf#wrap({'prefix': '\f*$'}))
+  let l:separator = strpart(getline('.'), 0, col('.') - 1) =~# '@\f*$' ? ' @' : ' '
+  return fzf#vim#complete#path(fzf_utils#grep#files_command(), fzf#wrap({
+        \ 'prefix': '\f*$',
+        \ 'options': ['--multi'],
+        \ 'reducer': {lines -> join(lines, l:separator)},
+        \ }))
 endfunction
 
 " Lines of the open buffers

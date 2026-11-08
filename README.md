@@ -58,6 +58,10 @@ imap <c-x><c-l> <Plug>(fzf-utils-complete-line)
 `-word` variants of the scope, code and tests mappings search for the word under
 the cursor or the selection.
 
+Path completion takes several files with `<Tab>`, with a space between. After
+an `@`, as in [vim-prompts](https://github.com/vimoured/vim-prompts)' `@files`,
+each file gets its own `@`.
+
 To include ignored files from the start in one project, set
 `let g:fzf_utils_include_ignored = 1` in its local config.
 
