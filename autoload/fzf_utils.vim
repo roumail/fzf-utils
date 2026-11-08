@@ -111,7 +111,7 @@ function! fzf_utils#word_pattern() abort
     else
       let l:save = [getreg('"'), getregtype('"')]
       normal! y
-      let l:text = getreg('"')
+      let l:text = substitute(getreg('"'), '\n$', '', '')
       call setreg('"', l:save[0], l:save[1])
     endif
     execute "normal! \<Esc>"
