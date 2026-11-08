@@ -1,152 +1,68 @@
 # fzf-utils
 
-Additions to [fzf.vim](https://github.com/junegunn/fzf.vim): finding files with
-[fd](https://github.com/sharkdp/fd), live and static
-[ripgrep](https://github.com/BurntSushi/ripgrep) searches, and picking buffers
-to wipe out.
+Additions to [fzf.vim](https://github.com/junegunn/fzf.vim): find files with
+[fd](https://github.com/sharkdp/fd), search live or once with
+[ripgrep](https://github.com/BurntSushi/ripgrep), and pick buffers or tabs to
+close.
 
-| Command | `<Plug>` mapping | Needs | What it does |
-| --- | --- | --- | --- |
-| `:FdFiles[!] [dir]` | `<Plug>(fzf-utils-files)` | fd | Find files: fzf.vim's `:Files`, listing with fd. |
-| `:Grep[!] [pattern] [-- rg-options/paths]` | `<Plug>(fzf-utils-grep)` | rg | Live grep: ripgrep re-runs as you type. `C-r` regex, `C-f` fixed string, `C-w` word. After `--`, `<Tab>` completes directories, with the `/` that makes them paths. |
-| | `<Plug>(fzf-utils-grep-word)` | rg | `:Grep` for the word under the cursor, or the visual selection (n, x) (*not yet*: on a Vim without `getregion()`, a whole-line selection searches for the line with its newline, and finds nothing; the same for every `-word` mapping). |
-| | `<Plug>(fzf-utils-grep-dir)` | rg | `:Grep` in the current buffer's directory. |
-| | `<Plug>(fzf-utils-grep-replay)` | rg | Replay the last live grep with its last query. |
-| `:GrepScope [pattern]` | `<Plug>(fzf-utils-grep-scope)` | rg | Pick a scope of the current project ([Project scopes](#project-scopes)), then `:Grep` in it. Without a project, a plain `:Grep`. |
-| | `<Plug>(fzf-utils-grep-scope-word)` | rg | `:GrepScope` for the word under the cursor, or the visual selection (n, x). |
-| | `<Plug>(fzf-utils-grep-code)`, `<Plug>(fzf-utils-grep-code-word)` | rg | `:Grep` in the project's code, in its language; `-word` for the word under the cursor or the visual selection (n, x). |
-| | `<Plug>(fzf-utils-grep-tests)`, `<Plug>(fzf-utils-grep-tests-word)` | rg | The same in the project's tests. |
-| | `<Plug>(fzf-utils-complete-path)` | rg | Insert mode: complete the file name before the cursor from the files `:FdFiles` lists. |
-| | `<Plug>(fzf-utils-complete-line)` | | Insert mode: complete a line of the open buffers. |
-| `:RgRaw[!] <rg args>` | | rg | Static grep: ripgrep runs once with your arguments as given (`:RgRaw -g "*.vim" foo src/`), fzf filters the result. |
-| `:FzfToggleIgnored` | | | Include or leave out ignored files in `:FdFiles`, `:Grep` and `:RgRaw`. |
-| `:BD` | | | Pick buffers to wipe out (`<Tab>` marks several, `ctrl-a` takes all). |
-| `:TD` | | | Pick tabs to close (`<Tab>` marks several, `ctrl-a` takes all). |
-
-*Not yet* marks a known bug: [vim-suite](https://github.com/vimoured/vim-suite)
-asserts the behaviour described (its `test/known-failures.txt`), and the note
-goes once it's fixed.
-
-Commands and mappings that need fd or rg are defined when that tool is
-installed. `:Grep` and `:RgRaw` save the accepted query to the search register
-and `:History/`.
-
-Bind the `<Plug>` mappings to keys of your choice. For example, `<leader>r`
-then where to search, uppercase for the word under the cursor:
-
-```vim
-nmap <leader><leader> <Plug>(fzf-utils-files)
-nmap <leader>r/ <Plug>(fzf-utils-grep)
-nmap <leader>r? <Plug>(fzf-utils-grep-word)
-nmap <leader>rp <Plug>(fzf-utils-grep-code)
-nmap <leader>rP <Plug>(fzf-utils-grep-code-word)
-nmap <leader>r. <Plug>(fzf-utils-grep-dir)
-nmap <leader>rr <Plug>(fzf-utils-grep-replay)
-nmap <leader>rs <Plug>(fzf-utils-grep-scope)
-nnoremap <leader>r: :Grep
-```
-
-## Completion in the command-line window
-
-fzf runs in a terminal window, which the command-line window (`q:`, `q/`,
-`<C-f>` on the command line) doesn't allow (E11). There
-`<Plug>(fzf-utils-complete-path)` and `<Plug>(fzf-utils-complete-line)` fall
-back to Vim's own `<C-x><C-f>` and `<C-x><C-l>`:
-
-```vim
-imap <c-x><c-f> <Plug>(fzf-utils-complete-path)
-imap <c-x><c-l> <Plug>(fzf-utils-complete-line)
-```
-
-For other fzf completions, `fzf_utils#complete#with(Spec)` calls
-`fzf#vim#complete()` with the spec `Spec()` returns (a Funcref or function
-name). In the command-line window it says fzf isn't available there, instead
-of failing:
-
-```vim
-inoremap <expr> <c-x><c-a> fzf_utils#complete#with('prompts#fzf')
-```
-
-## For other plugins
-
-`fzf_utils#pick_files(dir, callback)` picks files under
-`dir` the same way (`<Tab>` marks several) and calls `callback` with their
-absolute paths once the pick is done, e.g. for
-[vim-prompts](https://github.com/roumail/vim-prompts):
-
-```vim
-let g:prompts_file_picker = 'fzf_utils#pick_files'
-```
-
-## Files searched
-
-`:FdFiles` lists, `:Grep` / `:RgRaw` search, and `<Plug>(fzf-utils-complete-path)`
-and `fzf_utils#pick_files()` offer, the same files. The search:
-
-- includes hidden files (dotfiles),
-- follows symlinks,
-- skips `.git` and `__pycache__`,
-- skips files excluded by `.gitignore`, `.ignore` and git's global excludes
-  (plus `.fdignore` for fd and `.rgignore` for rg), unless ignored files are
-  included (next section).
-
-fd runs without `~/.config/fd/ignore` and ripgrep with `--no-config`, both
-with every option spelled out, so the result is the same whatever your shell
-setup.
-
-## Including ignored files: `g:fzf_utils_include_ignored`
-
-| Value | Ignored files |
-| --- | --- |
-| `0` (default) | Left out |
-| `1` | Included |
-
-`:FzfToggleIgnored` flips it, and says which: `fzf-utils include ignored: on`
-or `off`. Every listing and search reads it each time, so one toggle switches
-file and content searches together.
-
-To start with ignored files included in one project, e.g. one with a `.venv`,
-set it in that project's local config:
-
-```vim
-let g:fzf_utils_include_ignored = 1
-```
-
-## Project scopes
-
-With [project-detect](https://github.com/roumail/project-detect) installed,
-`:Grep` can search one part of the current project: its code or its tests,
-optionally limited to its language. The scopes of a Python project are
-`project`, `project python`, `tests` and `tests python`. A Go project has
-`project go`, `tests` and `tests go`. A Vim plugin has `project`,
-`project vim`, `tests` and `tests vim`.
-
-`<Plug>(fzf-utils-grep-scope)` picks one of these, plain `all` included;
-`<Plug>(fzf-utils-grep-code)` and `<Plug>(fzf-utils-grep-tests)` go straight
-to the code or tests in the project's language. Outside a project there is
-only `all`, so `:GrepScope` is a plain `:Grep`, and a project without tests
-has no `tests` scopes.
-
-The project is looked up when they are used, so the mappings work in any
-project. Where the project has no such scope, they print
-`Grep: no scope "<label>" in this project`.
+**Vim or Neovim:** Vim only, tested on 9.1 and newer. It calls a Vim-only
+function (`popup_notification()`), so it doesn't work on Neovim.
 
 ## Install
 
-Requires [fzf](https://github.com/junegunn/fzf) and fzf.vim. `:FdFiles` also
-requires `fd`; `:Grep`, `:RgRaw` and the grep mappings require `rg`.
+Needs [fzf](https://github.com/junegunn/fzf) and fzf.vim. File finding needs
+`fd`, and searching needs `rg`; their commands and mappings are defined when
+those tools are installed.
 
 ```vim
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'vimoured/fzf-utils'
-Plug 'roumail/project-detect'  " for project scopes
 ```
+
+Add [project-detect](https://github.com/vimoured/project-detect) to search just
+a project's code or tests:
+
+```vim
+Plug 'vimoured/project-detect'
+```
+
+## Use
+
+| Command | What it does |
+| --- | --- |
+| `:FdFiles[!] [dir]` | Find files. |
+| `:Grep[!] [pattern] [-- rg-options/paths]` | Live search: ripgrep reruns as you type. |
+| `:GrepScope [pattern]` | Pick a part of the project, then `:Grep` in it. |
+| `:RgRaw[!] <rg args>` | Run ripgrep once with your arguments and filter the result. |
+| `:FzfToggleIgnored` | Include or leave out ignored files, for every listing and search. |
+| `:BD` | Pick buffers to wipe out. |
+| `:TD` | Pick tabs to close. |
+
+Bind the `<Plug>` mappings you want:
+
+```vim
+nmap <leader><leader> <Plug>(fzf-utils-files)
+nmap <leader>r/ <Plug>(fzf-utils-grep)
+nmap <leader>r? <Plug>(fzf-utils-grep-word)
+xmap <leader>r? <Plug>(fzf-utils-grep-word)
+nmap <leader>r. <Plug>(fzf-utils-grep-dir)
+nmap <leader>rr <Plug>(fzf-utils-grep-replay)
+nmap <leader>rs <Plug>(fzf-utils-grep-scope)
+nmap <leader>rp <Plug>(fzf-utils-grep-code)
+nmap <leader>rt <Plug>(fzf-utils-grep-tests)
+imap <c-x><c-f> <Plug>(fzf-utils-complete-path)
+imap <c-x><c-l> <Plug>(fzf-utils-complete-line)
+```
+
+`-word` variants of the scope, code and tests mappings search for the word under
+the cursor or the selection.
+
+To include ignored files from the start in one project, set
+`let g:fzf_utils_include_ignored = 1` in its local config.
 
 ## Tests
 
-Tested by [vim-suite](https://github.com/vimoured/vim-suite), in
-`test/fzf-utils.vim`, `test/fzf-utils-outside-a-project.vim` and
-`test/fzf-utils-project-without-tests.vim`, with the dotfiles that use it:
-fd and rg run for real, fzf's window is left out. Every pull request runs
-them.
+The specs in [vim-suite](https://github.com/vimoured/vim-suite) define what it
+does: `test/fzf-utils.vim`, `test/fzf-utils-outside-a-project.vim` and
+`test/fzf-utils-project-without-tests.vim`.
