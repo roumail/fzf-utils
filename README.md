@@ -16,7 +16,7 @@ to wipe out.
 | | `<Plug>(fzf-utils-grep-scope-word)` | rg | `:GrepScope` for the word under the cursor, or the visual selection (n, x). |
 | | `<Plug>(fzf-utils-grep-code)`, `<Plug>(fzf-utils-grep-code-word)` | rg | `:Grep` in the project's code, in its language; `-word` for the word under the cursor or the visual selection (n, x). |
 | | `<Plug>(fzf-utils-grep-tests)`, `<Plug>(fzf-utils-grep-tests-word)` | rg | The same in the project's tests. |
-| | `<Plug>(fzf-utils-complete-path)` | rg | Insert mode: complete the file name before the cursor from `rg --files`. |
+| | `<Plug>(fzf-utils-complete-path)` | rg | Insert mode: complete the file name before the cursor from the files `:FdFiles` lists. |
 | | `<Plug>(fzf-utils-complete-line)` | | Insert mode: complete a line of the open buffers. |
 | `:RgRaw[!] <rg args>` | | rg | Static grep: ripgrep runs once with your arguments as given (`:RgRaw -g "*.vim" foo src/`), fzf filters the result. |
 | `:FzfToggleIgnored` | | | Include or leave out ignored files in `:FdFiles`, `:Grep` and `:RgRaw`. |
@@ -76,7 +76,8 @@ let g:prompts_file_picker = 'fzf_utils#pick_files'
 
 ## Files searched
 
-`:FdFiles` lists, and `:Grep` / `:RgRaw` search, the same files. The search:
+`:FdFiles` lists, `:Grep` / `:RgRaw` search, and `<Plug>(fzf-utils-complete-path)`
+and `fzf_utils#pick_files()` offer, the same files. The search:
 
 - includes hidden files (dotfiles),
 - follows symlinks,
@@ -96,8 +97,9 @@ setup.
 | `0` (default) | Left out |
 | `1` | Included |
 
-`:FzfToggleIgnored` flips it. `:FdFiles`, `:Grep` and `:RgRaw` read it on every
-search, so one toggle switches file and content searches together.
+`:FzfToggleIgnored` flips it, and says which: `fzf-utils include ignored: on`
+or `off`. Every listing and search reads it each time, so one toggle switches
+file and content searches together.
 
 To start with ignored files included in one project, e.g. one with a `.venv`,
 set it in that project's local config:
@@ -115,17 +117,13 @@ optionally limited to its language. The scopes of a Python project are
 `project go`, `tests` and `tests go`. A Vim plugin has `project`,
 `project vim`, `tests` and `tests vim`.
 
-| Function | What it does |
-| --- | --- |
-| `fzf_utils#grep_scope_pick([pattern])` | `:GrepScope`: pick a scope in fzf, then live grep in it. |
-| `fzf_utils#grep_code([pattern])` | Live grep in the project's code, in its language. |
-| `fzf_utils#grep_tests([pattern])` | Live grep in the project's tests, in its language. |
-| `fzf_utils#grep_scope(label [, pattern])` | Live grep in the scope `label`. |
-| `fzf_utils#grep_scopes()` | `[label, rg-args]` pairs: `all`, then the project's scopes. |
-| `fzf_utils#grep_scope_args(scope)` | The rg arguments for a scope: `{'root': …, 'places': …, 'language': …}`, with `places` directories (trailing `/`) and file globs relative to `root`, `[]` for all of it, and `language` an rg type or `''`. |
-| `fzf_utils#word_pattern()` | The word under the cursor, or the visual selection, as a pattern: regex characters escaped, wrapped in `\b`. |
+`<Plug>(fzf-utils-grep-scope)` picks one of these, plain `all` included;
+`<Plug>(fzf-utils-grep-code)` and `<Plug>(fzf-utils-grep-tests)` go straight
+to the code or tests in the project's language. Outside a project there is
+only `all`, so `:GrepScope` is a plain `:Grep`, and a project without tests
+has no `tests` scopes.
 
-The project is looked up when they are called, so mappings work in any
+The project is looked up when they are used, so the mappings work in any
 project. Where the project has no such scope, they print
 `Grep: no scope "<label>" in this project`.
 
@@ -137,6 +135,14 @@ requires `fd`; `:Grep`, `:RgRaw` and the grep mappings require `rg`.
 ```vim
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
-Plug 'roumail/fzf-utils'
+Plug 'vimoured/fzf-utils'
 Plug 'roumail/project-detect'  " for project scopes
 ```
+
+## Tests
+
+Tested by [vim-suite](https://github.com/vimoured/vim-suite), in
+`test/fzf-utils.vim`, `test/fzf-utils-outside-a-project.vim` and
+`test/fzf-utils-project-without-tests.vim`, with the dotfiles that use it:
+fd and rg run for real, fzf's window is left out. Every pull request runs
+them.

@@ -41,9 +41,13 @@ function! s:path(root, dir) abort
   return empty(l:path) ? './' : l:path =~# '/$' ? l:path : l:path . '/'
 endfunction
 
+function! s:has_project_detect() abort
+  return !empty(globpath(&runtimepath, 'autoload/project_detect.vim', 1))
+endfunction
+
 function! fzf_utils#grep_scopes() abort
   let l:list = [['all', []]]
-  if !exists('g:loaded_project_detect') || empty(project_detect#active())
+  if !s:has_project_detect() || empty(project_detect#active())
     return l:list
   endif
   let l:seen = [[]]
@@ -95,7 +99,7 @@ function! fzf_utils#grep_tests(...) abort
 endfunction
 
 function! s:label(part) abort
-  let l:language = exists('g:loaded_project_detect') ? project_detect#language() : ''
+  let l:language = s:has_project_detect() ? project_detect#language() : ''
   return empty(l:language) ? a:part : a:part . ' ' . l:language
 endfunction
 
