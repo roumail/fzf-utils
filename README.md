@@ -9,7 +9,7 @@ to wipe out.
 | --- | --- | --- | --- |
 | `:FdFiles[!] [dir]` | `<Plug>(fzf-utils-files)` | fd | Find files: fzf.vim's `:Files`, listing with fd. |
 | `:Grep[!] [pattern] [-- rg-options/paths]` | `<Plug>(fzf-utils-grep)` | rg | Live grep: ripgrep re-runs as you type. `C-r` regex, `C-f` fixed string, `C-w` word. After `--`, `<Tab>` completes directories, with the `/` that makes them paths. |
-| | `<Plug>(fzf-utils-grep-word)` | rg | `:Grep` for the word under the cursor, or the visual selection (n, x). |
+| | `<Plug>(fzf-utils-grep-word)` | rg | `:Grep` for the word under the cursor, or the visual selection (n, x) (*not yet*: on a Vim without `getregion()`, a whole-line selection searches for the line with its newline, and finds nothing; the same for every `-word` mapping). |
 | | `<Plug>(fzf-utils-grep-dir)` | rg | `:Grep` in the current buffer's directory. |
 | | `<Plug>(fzf-utils-grep-replay)` | rg | Replay the last live grep with its last query. |
 | `:GrepScope [pattern]` | `<Plug>(fzf-utils-grep-scope)` | rg | Pick a scope of the current project ([Project scopes](#project-scopes)), then `:Grep` in it. Without a project, a plain `:Grep`. |
@@ -22,6 +22,10 @@ to wipe out.
 | `:FzfToggleIgnored` | | | Include or leave out ignored files in `:FdFiles`, `:Grep` and `:RgRaw`. |
 | `:BD` | | | Pick buffers to wipe out (`<Tab>` marks several, `ctrl-a` takes all). |
 | `:TD` | | | Pick tabs to close (`<Tab>` marks several, `ctrl-a` takes all). |
+
+*Not yet* marks a known bug: [vim-suite](https://github.com/vimoured/vim-suite)
+asserts the behaviour described (its `test/known-failures.txt`), and the note
+goes once it's fixed.
 
 Commands and mappings that need fd or rg are defined when that tool is
 installed. `:Grep` and `:RgRaw` save the accepted query to the search register
