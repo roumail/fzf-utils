@@ -23,6 +23,9 @@ function! s:init_fd() abort
 
   " <Plug> mapping; no keys are bound here (see README)
   nnoremap <silent> <Plug>(fzf-utils-files) <Cmd>FdFiles<CR>
+  " Insert-mode directory name completion; Vim's own file name completion in
+  " the command-line window
+  inoremap <expr> <Plug>(fzf-utils-complete-dir) fzf_utils#complete#dir()
 endfunction
 
 function! s:init_rg() abort

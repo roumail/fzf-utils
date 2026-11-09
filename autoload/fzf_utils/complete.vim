@@ -8,19 +8,42 @@ function! s:in_cmdwin() abort
   return getcmdwintype() !=# ''
 endfunction
 
-" The files :FdFiles lists, for the file name before the cursor. The prefix is
-" \f, read with 'isfname': fzf.vim's own reading takes its @ (letters) for a
-" literal @, so @file would search for @file.
+" The listing the shell's fzf uses, from fzf's own variable, following
+" :FzfToggleIgnored; a:default when the variable isn't set
+function! s:shell_listing(variable, default) abort
+  let l:command = getenv(a:variable)
+  if empty(l:command)
+    return a:default
+  endif
+  return l:command . (get(g:, 'fzf_utils_include_ignored', 0) ? ' --no-ignore' : '')
+endfunction
+
+" The prefix is \f, read with 'isfname': fzf.vim's own reading takes its @
+" (letters) for a literal @, so @file would search for @file.
+function! s:path(listing, spec) abort
+  return fzf#vim#complete#path(a:listing, fzf#wrap(extend({'prefix': '\f*$'}, a:spec)))
+endfunction
+
+" The files Ctrl-T lists in the shell, for the file name before the cursor
 function! fzf_utils#complete#path() abort
   if s:in_cmdwin()
     return "\<C-x>\<C-f>"
   endif
   let l:separator = strpart(getline('.'), 0, col('.') - 1) =~# '@\f*$' ? ' @' : ' '
-  return fzf#vim#complete#path(fzf_utils#grep#files_command(), fzf#wrap({
-        \ 'prefix': '\f*$',
-        \ 'options': ['--multi'],
+  return s:path(s:shell_listing('FZF_CTRL_T_COMMAND', fzf_utils#grep#files_command()), {
+        \ 'options': '--multi ' . $FZF_CTRL_T_OPTS,
         \ 'reducer': {lines -> join(lines, l:separator)},
-        \ }))
+        \ })
+endfunction
+
+" The directories Alt-C lists in the shell, for the name before the cursor
+function! fzf_utils#complete#dir() abort
+  if s:in_cmdwin()
+    return "\<C-x>\<C-f>"
+  endif
+  return s:path(s:shell_listing('FZF_ALT_C_COMMAND', fzf_utils#files#dirs_command()), {
+        \ 'options': '--no-multi ' . $FZF_ALT_C_OPTS,
+        \ })
 endfunction
 
 " Lines of the open buffers

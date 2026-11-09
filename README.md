@@ -52,6 +52,7 @@ nmap <leader>rs <Plug>(fzf-utils-grep-scope)
 nmap <leader>rp <Plug>(fzf-utils-grep-code)
 nmap <leader>rt <Plug>(fzf-utils-grep-tests)
 imap <c-x><c-f> <Plug>(fzf-utils-complete-path)
+imap <c-x><c-d> <Plug>(fzf-utils-complete-dir)
 imap <c-x><c-l> <Plug>(fzf-utils-complete-line)
 ```
 
@@ -61,6 +62,12 @@ the cursor or the selection.
 Path completion takes several files with `<Tab>`, with a space between. After
 an `@`, as in [vim-prompts](https://github.com/vimoured/vim-prompts)' `@files`,
 each file gets its own `@`.
+
+Path completion lists what `$FZF_CTRL_T_COMMAND` lists and directory completion
+what `$FZF_ALT_C_COMMAND` lists, with the previews from `$FZF_CTRL_T_OPTS` and
+`$FZF_ALT_C_OPTS`, so they match the shell's fzf keys. When a command isn't set,
+they list what `:FdFiles` does, or its directories. `:FzfToggleIgnored` adds
+`--no-ignore` to whichever command is used.
 
 To include ignored files from the start in one project, set
 `let g:fzf_utils_include_ignored = 1` in its local config.
