@@ -24,7 +24,12 @@ function! fzf_utils#grep_scope_args(scope) abort
     " too. A glob is matched relative to the working directory: it can only be
     " anchored there.
     let l:args = l:at_root ? [] : [s:path(l:root, '')]
-    let l:globs = map(l:dirs, 'l:at_root ? v:val . "**" : "**/" . v:val . "**"') + l:globs
+    " A -g glob takes precedence over -t, so a directory's must name the language's files
+    let l:files = empty(a:scope.language) ? ['**'] : map(split(matchstr(
+          \ join(systemlist('rg --no-config --type-list'), "\n"),
+          \ '\%(^\|\n\)' . a:scope.language . ': \zs[^\n]*'), ', '), '"**/" . v:val')
+    let l:globs = flatten(map(l:dirs, {_, d -> map(copy(l:files),
+          \ {i, f -> (l:at_root ? '' : '**/') . d . f})})) + l:globs
     " :Grep passes flags to the shell as they are: quote the glob
     let l:args += map(l:globs, '"-g" . shellescape(v:val)')
   endif
