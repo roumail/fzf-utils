@@ -50,20 +50,34 @@ function! fzf_utils#grep_scopes() abort
   if !s:has_project_detect() || empty(project_detect#active())
     return l:list
   endif
+  let l:parts = project_detect#parts()
   let l:seen = [[]]
-  for [l:part, l:places] in [['project', project_detect#sources()], ['tests', project_detect#tests()]]
-    if l:part ==# 'tests' && empty(l:places)
-      continue
+  for [l:part, l:key] in [['project', 'sources'], ['tests', 'tests']]
+    let l:all = []
+    for l:each in l:parts
+      call extend(l:all, filter(copy(l:each[l:key]), 'index(l:all, v:val) < 0'))
+    endfor
+    " Code with no places of its own is anywhere in the root, so all of it is
+    if l:key ==# 'sources' && !empty(filter(copy(l:parts), 'empty(v:val.sources)'))
+      let l:all = []
     endif
-    for l:language in uniq(['', project_detect#language()])
+    for [l:language, l:places] in [['', l:all]]
+          \ + map(copy(l:parts), {_, p -> [p.language, p[l:key]]})
+      if l:part ==# 'tests' && empty(l:places)
+        continue
+      endif
       let l:args = fzf_utils#grep_scope_args({'root': project_detect#root(), 'places': l:places, 'language': l:language})
       if index(l:seen, l:args) < 0
-        call add(l:list, [empty(l:language) ? l:part : s:label(l:part), l:args])
+        call add(l:list, [s:scope_label(l:part, l:language), l:args])
         call add(l:seen, l:args)
       endif
     endfor
   endfor
   return l:list
+endfunction
+
+function! s:scope_label(part, language) abort
+  return empty(a:language) ? a:part : a:part . ' ' . a:language
 endfunction
 
 function! fzf_utils#grep_scope(label, ...) abort
@@ -99,8 +113,7 @@ function! fzf_utils#grep_tests(...) abort
 endfunction
 
 function! s:label(part) abort
-  let l:language = s:has_project_detect() ? project_detect#language() : ''
-  return empty(l:language) ? a:part : a:part . ' ' . l:language
+  return s:scope_label(a:part, s:has_project_detect() ? get(project_detect#part(), 'language', '') : '')
 endfunction
 
 function! fzf_utils#word_pattern() abort
