@@ -61,9 +61,9 @@ These need project-detect:
 
 | Mapping | Searches |
 | --- | --- |
-| `<Plug>(fzf-utils-grep-scope)` | The part you pick, the same as `:GrepScope`: everything, the project's code, its tests, or either of those in the project's language only. |
-| `<Plug>(fzf-utils-grep-code)` | The project's code, in its language. |
-| `<Plug>(fzf-utils-grep-tests)` | The project's tests, in its language. |
+| `<Plug>(fzf-utils-grep-scope)` | The part you pick, the same as `:GrepScope`: everything, the project's code, its tests, or either of those in one of the project's languages only. |
+| `<Plug>(fzf-utils-grep-code)` | The project's code, in the current file's language. |
+| `<Plug>(fzf-utils-grep-tests)` | The project's tests, in the current file's language. |
 
 Add `-word` to any of them, as in `<Plug>(fzf-utils-grep-code-word)`, to start
 the search already filled in. In normal mode it searches for the word under the
