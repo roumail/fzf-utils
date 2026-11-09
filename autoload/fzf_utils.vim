@@ -53,8 +53,15 @@ function! fzf_utils#grep_scopes() abort
   let l:parts = project_detect#parts()
   let l:seen = [[]]
   for [l:part, l:key] in [['project', 'sources'], ['tests', 'tests']]
-    " First every language's places together, then each language's own
-    for [l:language, l:places] in [['', s:all_places(l:parts, l:key)]]
+    let l:all = []
+    for l:each in l:parts
+      call extend(l:all, filter(copy(l:each[l:key]), 'index(l:all, v:val) < 0'))
+    endfor
+    " Code with no places of its own is anywhere in the root, so all of it is
+    if l:key ==# 'sources' && !empty(filter(copy(l:parts), 'empty(v:val.sources)'))
+      let l:all = []
+    endif
+    for [l:language, l:places] in [['', l:all]]
           \ + map(copy(l:parts), {_, p -> [p.language, p[l:key]]})
       if l:part ==# 'tests' && empty(l:places)
         continue
@@ -67,18 +74,6 @@ function! fzf_utils#grep_scopes() abort
     endfor
   endfor
   return l:list
-endfunction
-
-function! s:all_places(parts, key) abort
-  let l:places = []
-  for l:part in a:parts
-    " Code with no places of its own is anywhere in the root, so all of it is
-    if a:key ==# 'sources' && empty(l:part.sources)
-      return []
-    endif
-    call extend(l:places, filter(copy(l:part[a:key]), 'index(l:places, v:val) < 0'))
-  endfor
-  return l:places
 endfunction
 
 function! s:scope_label(part, language) abort
@@ -118,9 +113,7 @@ function! fzf_utils#grep_tests(...) abort
 endfunction
 
 function! s:label(part) abort
-  " The current file's language, in a project of several
-  let l:language = s:has_project_detect() ? get(project_detect#part(), 'language', '') : ''
-  return s:scope_label(a:part, l:language)
+  return s:scope_label(a:part, s:has_project_detect() ? get(project_detect#part(), 'language', '') : '')
 endfunction
 
 function! fzf_utils#word_pattern() abort
