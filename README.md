@@ -20,8 +20,10 @@ Plug 'junegunn/fzf.vim'
 Plug 'vimoured/fzf-utils'
 ```
 
-Add [project-detect](https://github.com/vimoured/project-detect) to search just
-a project's code or tests:
+Optional: [project-detect](https://github.com/vimoured/project-detect) lets you
+search just a project's code or tests. It adds the choices in `:GrepScope` and
+makes the mappings in [Searching part of a project](#searching-part-of-a-project)
+work:
 
 ```vim
 Plug 'vimoured/project-detect'
@@ -48,29 +50,71 @@ nmap <leader>r? <Plug>(fzf-utils-grep-word)
 xmap <leader>r? <Plug>(fzf-utils-grep-word)
 nmap <leader>r. <Plug>(fzf-utils-grep-dir)
 nmap <leader>rr <Plug>(fzf-utils-grep-replay)
-nmap <leader>rs <Plug>(fzf-utils-grep-scope)
-nmap <leader>rp <Plug>(fzf-utils-grep-code)
-nmap <leader>rt <Plug>(fzf-utils-grep-tests)
 imap <c-x><c-f> <Plug>(fzf-utils-complete-path)
 imap <c-x><c-d> <Plug>(fzf-utils-complete-dir)
 imap <c-x><c-l> <Plug>(fzf-utils-complete-line)
 ```
 
-`-word` variants of the scope, code and tests mappings search for the word under
-the cursor or the selection.
+### Searching part of a project
 
-Path completion takes several files with `<Tab>`, with a space between. After
-an `@`, as in [vim-prompts](https://github.com/vimoured/vim-prompts)' `@files`,
-each file gets its own `@`.
+These need project-detect:
 
-Path completion lists what `$FZF_CTRL_T_COMMAND` lists and directory completion
-what `$FZF_ALT_C_COMMAND` lists, with the previews from `$FZF_CTRL_T_OPTS` and
-`$FZF_ALT_C_OPTS`, so they match the shell's fzf keys. When a command isn't set,
-they list what `:FdFiles` does, or its directories. `:FzfToggleIgnored` adds
-`--no-ignore` to whichever command is used.
+| Mapping | Searches |
+| --- | --- |
+| `<Plug>(fzf-utils-grep-scope)` | The part you pick, the same as `:GrepScope`: everything, the project's code, its tests, or either of those in the project's language only. |
+| `<Plug>(fzf-utils-grep-code)` | The project's code, in its language. |
+| `<Plug>(fzf-utils-grep-tests)` | The project's tests, in its language. |
 
-To include ignored files from the start in one project, set
-`let g:fzf_utils_include_ignored = 1` in its local config.
+Add `-word` to any of them, as in `<Plug>(fzf-utils-grep-code-word)`, to start
+the search already filled in. In normal mode it searches for the word under the
+cursor, and in visual mode for the selection, matching whole words only.
+
+```vim
+nmap <leader>rs <Plug>(fzf-utils-grep-scope)
+nmap <leader>rp <Plug>(fzf-utils-grep-code)
+nmap <leader>rt <Plug>(fzf-utils-grep-tests)
+nmap <leader>rP <Plug>(fzf-utils-grep-code-word)
+xmap <leader>rP <Plug>(fzf-utils-grep-code-word)
+```
+
+Without project-detect, or outside a project, `<Plug>(fzf-utils-grep-scope)` is a
+plain `:Grep`, and the code and tests mappings say there's nothing to search.
+
+### Completion
+
+Path completion can insert several files: mark them with `<Tab>`, and they go in
+on one line with a space between them.
+
+If the path you're completing starts with `@`, each file keeps that `@`, the form
+[vim-prompts](https://github.com/vimoured/vim-prompts)' `@files` expects:
+
+```text
+@src/a.py @tests/b.py
+```
+
+## Configuration
+
+### Completion sources
+
+Completion uses the same settings as the shell's fzf keys:
+
+| Completion | Lists | Preview |
+| --- | --- | --- |
+| Path | `$FZF_CTRL_T_COMMAND` | `$FZF_CTRL_T_OPTS` |
+| Directory | `$FZF_ALT_C_COMMAND` | `$FZF_ALT_C_OPTS` |
+
+When a command isn't set, path completion lists what `:FdFiles` does, and
+directory completion lists its directories.
+
+### Ignored files
+
+`:FzfToggleIgnored` adds `--no-ignore` to every listing and search, including
+completion. To include ignored files from the start in one project, set this in
+its local config:
+
+```vim
+let g:fzf_utils_include_ignored = 1
+```
 
 ## Tests
 
